@@ -1,6 +1,5 @@
 # mywebscrape
 #
-# API_KEY=AIzaSyAtXMDsT9-qGBk7IItBQr4PRNnibg5Mz7E
 #
 # Scraping sequences
 

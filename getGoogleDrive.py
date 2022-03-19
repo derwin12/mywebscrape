@@ -8,8 +8,8 @@ def printChildren(parent):
   for afile in files:
     print('File {}'.format(afile.get('name')))
 
-API_KEY = 'AIzaSyDA3nf7s5DPEzMwZaeSj5Y1zrZzI-yE29M' # get from API->Credentials page in console.cloud.googl.com
-FOLDER_ID = '1qSwKT4ooVnflY-_HAogZmibl787PO3Af' # NOTE: folder must be publicly visible when using an API key.
+API_KEY = "AIzaSyDA3nf7s5DPEzMwZaeSj5Y1zrZzI-yE29M" # get from API->Credentials page in console.cloud.googl.com
+FOLDER_ID = "1qSwKT4ooVnflY-_HAogZmibl787PO3Af" # NOTE: folder must be publicly visible when using an API key.
 
 service = build('drive', 'v3', developerKey=API_KEY)
 
@@ -26,8 +26,8 @@ pageToken = ""
 from getfilelistpy import getfilelist
 
 resource = {
-    "api_key": "AIzaSyDA3nf7s5DPEzMwZaeSj5Y1zrZzI-yE29M",
-    "id": "1qSwKT4ooVnflY-_HAogZmibl787PO3Af",
+    "api_key": API_KEY,
+    "id": FOLDER_ID,
     "fields": "files(name,id)",
 }
 res = getfilelist.GetFileList(resource)  # or r = getfilelist.GetFolderTree(resource)
