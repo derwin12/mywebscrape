@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
