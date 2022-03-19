@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 beautifulsoup4 = "*"
+httpx = "*"
 
 [dev-packages]
 black = "*"
