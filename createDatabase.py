@@ -3,6 +3,7 @@ import sqlite3
 conn = sqlite3.connect('sequence.db')
 c = conn.cursor()
 
-c.execute('''CREATE TABLE sequences(storename, url, name, last_seen) ''')
+c.execute('''DROP TABLE sequences''')
+c.execute('''CREATE TABLE sequences(storename TEXT, url TEXT, name TEXT, last_seen DATE)''')
 
 c.close()

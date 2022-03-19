@@ -1,14 +1,13 @@
 import sqlite3
+import datetime
 
-conn = sqlite3.connect('sequence.db')
-c = conn.cursor()
+def insSequence(store, url, name):
+    conn = sqlite3.connect('sequence.db')
+    c = conn.cursor()
+    current_date = datetime.datetime.now()
 
-c.execute('''DELETE from sequences where url = 'someurl' ''')
-c.execute('''INSERT into sequences VALUES(?,?,?,datetime("now"))''', ('somestore','someurl', 'name'))
-conn.commit()
+    c.execute('''DELETE from sequences where url=? AND storename = ?''', (url,store,))
+    c.execute('''INSERT into sequences VALUES(?,?,?,?)''', (store,url, name, current_date))
+    conn.commit()
 
-c.execute('''SELECT * from sequences''')
-results = c.fetchall()
-print(results)
-
-c.close()
+    c.close()
