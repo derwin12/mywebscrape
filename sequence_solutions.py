@@ -4,6 +4,8 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
+from insertData import insSequence
+
 BASEURLS = [
     "https://sequencesol.com/christmas-sequences/",
     "https://sequencesol.com/halloween-sequences/",
@@ -31,7 +33,7 @@ def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
     if next_page:
         response = httpx.get(next_page["href"])  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.append(get_products_from_page(next_soup))
+        sequences.extend(get_products_from_page(next_soup))
 
     return sequences
 
@@ -44,7 +46,8 @@ def main() -> None:
         soup = BeautifulSoup(response.text, "html.parser")
         products.extend(get_products_from_page(soup))
 
-    print(products)
+    for product in products:
+        insSequence(store="Bostik", url=product.url, name=product.name)
 
 
 if __name__ == "__main__":
