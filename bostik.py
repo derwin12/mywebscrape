@@ -1,7 +1,8 @@
-from bs4 import BeautifulSoup
-import httpx
-from urllib.parse import urljoin
 from dataclasses import dataclass
+from urllib.parse import urljoin
+
+import httpx
+from bs4 import BeautifulSoup
 
 BASEURL = "https://bostickfamilylightshow.com/collections/sequences"
 
