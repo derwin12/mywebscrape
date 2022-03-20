@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 beautifulsoup4 = "*"
 httpx = "*"
+flask = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 black = "*"
