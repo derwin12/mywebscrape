@@ -46,7 +46,7 @@ def main() -> None:
         products.extend(get_products_from_page(soup))
 
     for product in products:
-        insSequence(store="Bostik", url=product.url, name=product.name)
+        insSequence(store="SequenceSol", url=product.url, name=product.name)
 
 
 if __name__ == "__main__":

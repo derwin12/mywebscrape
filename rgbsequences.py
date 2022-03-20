@@ -42,7 +42,7 @@ def main() -> None:
     products = get_products_from_page(soup)
 
     for product in products:
-        insSequence(store="Bostik", url=product.url, name=product.name)
+        insSequence(store="RGBSequences", url=product.url, name=product.name)
 
 
 if __name__ == "__main__":

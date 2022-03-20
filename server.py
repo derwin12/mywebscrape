@@ -8,7 +8,7 @@ app = Flask(__name__)
 def index():
     con = sqlite3.connect('sequence.db')
     cur = con.cursor()
-    cur.execute("SELECT * FROM sequences")
+    cur.execute("SELECT * FROM sequences ORDER BY storename, name")
     rows = cur.fetchall()
 
     return render_template('sequences.html', title='Sequences list',
