@@ -14,6 +14,7 @@ def index():
     return render_template('sequences.html', title='Sequences list',
                            rows=rows)
 
+
 @app.route('/search', methods=['GET', 'POST'])
 def sequence():
     if request.method == 'POST':
@@ -21,8 +22,11 @@ def sequence():
         cur = con.cursor()
 
         cur.execute("SELECT storename, name, url FROM sequences " +
-                    "where lower(name) like lower(?) ORDER BY storename, name",
-                    ("%{}%".format(request.form['search_string']),))
+                    "where lower(name) like lower(?) " +
+                    " or lower(storename) like lower(?) " +
+                    " ORDER BY storename, name",
+                    ("%{}%".format(request.form['search_string']),
+                     "%{}%".format(request.form['search_string']),))
         return render_template("sequence.html", title='Found Sequences (' +
                                                       request.form['search_string'] + ')', records=cur.fetchall())
 
