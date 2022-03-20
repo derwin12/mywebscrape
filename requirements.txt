@@ -5,3 +5,4 @@ requests~=2.27.1
 python-dotenv~=0.19.2
 getfilelistpy~=1.0.7
 Flask~=2.0.3
+google-api-python-client==2.41.0
