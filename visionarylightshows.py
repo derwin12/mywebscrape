@@ -25,9 +25,9 @@ def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
         product_url = urljoin(BASEURL, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
 
-    next_page = soup.find(class_="next")
+    next_page = soup.find("ul", "list--inline pagination").find_all("li")[-1].find("a")
     if next_page:
-        response = httpx.get(next_page["href"])  # type: ignore
+        response = httpx.get(urljoin(BASEURL, next_page["href"]))  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(next_soup))
 
