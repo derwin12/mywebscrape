@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+  <link rel="stylesheet" href='/static/main.css' />
+</head>
+<body>
+<h1>{{title}}</h1>
+<table>
+  <th>Store</th><th>Name</th>
+{% for row in rows %}
+<tr>
+  <td>{{row[0]}}</td>
+  <td><a href="{{row[1]}}">{{row[2]}}</a></td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
