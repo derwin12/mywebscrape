@@ -1,7 +1,7 @@
-from googleapiclient.discovery import build
 import os
 from dotenv import load_dotenv
 from getfilelistpy import getfilelist
+from googleapiclient.discovery import build
 
 load_dotenv()  # take environment variables from .env.
 
@@ -18,22 +18,14 @@ resource = {
     "fields": "files(name,id)",
 }
 
-def printChildren(parent):
-    param = {"q": "'" + parent + "' in parents and mimeType != 'application/vnd.google-apps.folder'"}
-    result = service.files().list(**param).execute()
-    files = result.get('files')
-
-    for afile in files:
-        print('File {}'.format(afile.get('name')))
 
 def main():
-
     res = getfilelist.GetFileList(resource)  # or r = getfilelist.GetFolderTree(resource)
 
     for key, value in res.items():
         if key == 'fileList':
-            for a in sorted(value[0]["files"], key=lambda x : x["name"]):
-                if(a["name"].endswith("zip")):
+            for a in sorted(value[0]["files"], key=lambda x: x["name"]):
+                if a["name"].endswith("zip"):
                     try:
                         print("\t\t<song>")
                         print("\t\t\t<hash>Nomusicincluded</hash>")
@@ -46,10 +38,13 @@ def main():
                             "id"] + "&amp;authuser=0&amp;export=download]]>" + "</download>")
                         print("\t\t\t<sequence>" + "Yes" + "</sequence>")
                         print(
-                            "\t\t\t<weblink>" + "<![CDATA[https://drive.google.com/drive/folders/" + '1qSwKT4ooVnflY-_HAogZmibl787PO3Af' + "?fref=gc&amp;dti=628061113896314]]>" + "</weblink>")
+                            "\t\t\t<weblink>" + "<![CDATA[https://drive.google.com/drive/folders/" +
+                            '1qSwKT4ooVnflY-_HAogZmibl787PO3Af' +
+                            "?fref=gc&amp;dti=628061113896314]]>" + "</weblink>")
                         print("\t\t</song>")
                     except:
                         pass
+
 
 if __name__ == "__main__":
     main()

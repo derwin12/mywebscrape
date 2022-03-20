@@ -1,6 +1,6 @@
 bs4~=0.0.1
 beautifulsoup4~=4.10.0
-httpx>=0.22.0
+httpx~=0.22.0
 requests~=2.27.1
 python-dotenv~=0.19.2
 getfilelistpy~=1.0.7

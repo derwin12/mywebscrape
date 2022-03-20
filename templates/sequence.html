@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href='/static/main.css' />
+</head>
+<body>
+<center>
+    <h1>{{title}}</h1>
+</center>
+<FORM action="{{url_for('sequence')}}" method="post">
+    <p>
+        <br>
+        <b>Name or Store:</b>
+        <input name="search_string" type="text" value="{{request.form.sequence}}"><br/>
+    </p>
+    <p><br>
+        <input name="request" type="Submit" value="Submit"><br/>
+    </p>
+    {% if records %}
+    <h2>Search Results</h2>
+    <br>
+    <div id="results">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Store Name</th>
+                <th>Sequence</th>
+            </tr>
+            </thead>
+        {% for record in records%}
+        <tr>
+            <td>{{ record[0] }}</td>
+            <td><a href="{{ record[2] }}">{{ record[1] }}</a></td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</FORM>
+</body>
+</html>
