@@ -13,6 +13,7 @@ flask-sqlalchemy = "*"
 black = "*"
 rope = "*"
 jupyterlab = "*"
+bpython = "*"
 
 [requires]
 python_version = "3.10"
