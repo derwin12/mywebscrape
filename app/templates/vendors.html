@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Vendors List{% endblock %}
+
+{% block content %}
+    <form name="vendor-registration-form" action="{{ url_for('register_vendor') }}" method='post'>
+      <label>Name</label>
+      <input name="name" type="text" required>
+      <input type="submit" />
+    </div>
+    <div id="vendorlist">
+      <p>Vendor Name</p>
+      {% for vendor in vendors %}
+        <p>{{vendor.name}}</p>
+      {% endfor %}
+  </div>
+{% endblock %}
