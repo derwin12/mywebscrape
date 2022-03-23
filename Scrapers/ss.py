@@ -1,5 +1,8 @@
 import requests
+
 from my_funcs import insSequence
+from urllib.parse import urljoin
+
 
 from bs4 import BeautifulSoup
 
@@ -13,12 +16,12 @@ def main() -> None:
 
     results = soup.find(id="mainContent")
 
-    items = results.find_all("div", class_="product-index-item")
+    products = results.find_all("div", class_="product-index-item")
 
-    for item in items:
-        link_element = item.find("a").attrs["href"]
-        name_element = item.find("a").getText()
-        insSequence(store="ShowStoppers", url=link_element, name=name_element)
+    for product in products:
+        product_url = urljoin(BASEURL, product.find("a")["href"])
+        name_element = product.find("a").getText()
+        insSequence(store="ShowStoppers", url=product_url, name=name_element)
 
 
 if __name__ == "__main__":
