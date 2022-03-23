@@ -1,18 +1,11 @@
-from dataclasses import dataclass
 from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
 
-from insertData import insSequence
+from my_funcs import Sequence, insSequence
 
 BASEURL = "https://bostickfamilylightshow.com/collections/sequences"
-
-
-@dataclass
-class Sequence:
-    name: str
-    url: str
 
 
 def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:

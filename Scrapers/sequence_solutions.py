@@ -1,21 +1,13 @@
-from dataclasses import dataclass
-
 import httpx
 from bs4 import BeautifulSoup
 
-from insertData import insSequence
+from my_funcs import Sequence, insSequence
 
 BASEURLS = [
     "https://sequencesol.com/christmas-sequences/",
     "https://sequencesol.com/halloween-sequences/",
     "https://sequencesol.com/other-sequences/",
 ]
-
-
-@dataclass
-class Sequence:
-    name: str
-    url: str
 
 
 def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
