@@ -1,18 +1,12 @@
-from dataclasses import dataclass
+from my_funcs import Sequence
 from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
 
-from insertData import insSequence
+from my_funcs import insSequence
 
 BASEURL = "https://visionarylightshows.com/collections/all"
-
-
-@dataclass
-class Sequence:
-    name: str
-    url: str
 
 
 def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
@@ -25,7 +19,7 @@ def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
         product_url = urljoin(BASEURL, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
 
-    next_page = soup.find("ul", "list--inline pagination").find_all("li")[-1].find("a")
+    next_page = soup.find("ul", "list--inline pagination").find_all("li")[-1].find("a")  # type: ignore
     if next_page:
         response = httpx.get(urljoin(BASEURL, next_page["href"]))  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
