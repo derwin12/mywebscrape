@@ -4,9 +4,9 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from insertData import insSequence
+from my_funcs import insSequence
 
-BASEURLS = [ "https://pixelperfectsequences.com/collections/christmas-2",
+BASEURLS = ["https://pixelperfectsequences.com/collections/christmas-2",
             "https://pixelperfectsequences.com/collections/halloween-sequences",
             ]
 
@@ -20,13 +20,12 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
-
     products = soup.find_all("div", class_="grid__item small--one-half medium-up--one-fifth")
 
     sequences = []
     for product in products:
         sequence_name = product.find(class_="product-card__name").text
-        #song, artist = sequence_name.split(" - ")
+        # song, artist = sequence_name.split(" - ")
         product_url = urljoin(BASEURL, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
 
@@ -40,7 +39,6 @@ def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
 
 
 def main() -> None:
-
     products = []
     for url in BASEURLS:
         response = httpx.get(url)
