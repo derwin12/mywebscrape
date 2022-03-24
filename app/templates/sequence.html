@@ -30,7 +30,7 @@
             </thead>
         {% for sequence in sequences %}
         <tr>
-            <td>Store</td></td><td><a href="{{ sequence.link }}">{{ sequence.name }}</a></td>
+            <td>{{ sequence.vendor_name }}</td><td><a href="{{ sequence.link }}">{{ sequence.name }}</a></td>
         </tr>
         {% endfor %}
         </table>

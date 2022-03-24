@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc
+from sqlalchemy import exc, or_
 
 app = Flask(__name__, instance_relative_config=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
@@ -37,12 +37,14 @@ class Sequence(db.Model):  # type: ignore
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
 
     def __repr__(self):
-        return f"<Sequence %r>" % self.name
+        return f"<Sequence() %r %r>" % (self.name, self.link)
 
 
 @app.route("/")
 def index():
-    sequences = Sequence.query.limit(20)
+    sequences = Sequence.query.join(Vendor)\
+        .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"))\
+        .limit(10)
 
     return render_template(
         "sequence.html",
@@ -77,7 +79,7 @@ def register_url():
         if form["url"] and form["vendor_id"]:
             baseurl = BaseUrl(url=form["url"], vendor_id=form["vendor_id"])
             db.session.add(baseurl)
-            db.session.commit()
+            session_commit()
             return f"{baseurl.url} successfully created."
         else:
             return "Missing values."
@@ -91,9 +93,11 @@ def register_url():
 def sequence():
     if request.method == "POST":
         ss = request.form["search_string"]
-# TODO Search both store and name
+
         looking_for = '%{0}%'.format(ss)
-        sequences = Sequence.query.filter(Sequence.name.ilike(looking_for))
+        sequences = Sequence.query.join(Vendor)\
+            .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"))\
+            .filter(or_(Sequence.name.ilike(looking_for), Vendor.name.ilike(looking_for)))
 
         return render_template(
              "sequence.html",
