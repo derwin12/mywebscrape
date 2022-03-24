@@ -14,19 +14,20 @@ STRING_SUCCESS = 'success'
 class Vendor(db.Model):  # type: ignore
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(120), unique=True, index=True, nullable=False)
-    urls = db.relationship('Base_Url', backref='vendor')
+    urls = db.relationship('BaseUrl', backref='vendor')
 
     def __repr__(self):
         return f"<Vendor %r>" % self.name
 
 
-class Base_Url(db.Model):  # type: ignore
+class BaseUrl(db.Model):  # type: ignore
+    __table_name__ = 'Base__Url'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     url = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
 
     def __repr__(self):
-        return f"<Base_Url %r>" % self.url
+        return f"<BaseUrl %r>" % self.url
 
 
 class Sequence(db.Model):  # type: ignore
@@ -41,13 +42,13 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
-#   return render_template("main.html")
-    # con = sqlite3.connect("sequence.db")
-    # cur = con.cursor()
-    # cur.execute("SELECT * FROM sequences ORDER BY storename, name")
-    # rows = cur.fetchall()
+    sequences = Sequence.query.limit(20)
 
-    return render_template("sequence.html", title="Find A Sequence")
+    return render_template(
+        "sequence.html",
+        title="List Sequences",
+        sequences=sequences,
+    )
 
 
 @app.route("/vendors")
@@ -63,49 +64,41 @@ def register_vendor():
     db.session.add(vendor)
     try:
         session_commit()
-        return "Successfully added vendor"
+        return f"{vendor.name} successfully added vendor."
     except exc.IntegrityError:
         db.session.rollback()
         return "Error"
 
 
-#@login_required
 @app.route("/register-url", methods=["GET", "POST"])
 def register_url():
     if request.method == 'POST':
         form = request.form
         if form["url"] and form["vendor_id"]:
-            base_url = Base_Url(url=form["url"], vendor_id=form["vendor_id"])
-            db.session.add(base_url)
+            baseurl = BaseUrl(url=form["url"], vendor_id=form["vendor_id"])
+            db.session.add(baseurl)
             db.session.commit()
-            return f"{base_url.url} successfully created."
+            return f"{baseurl.url} successfully created."
         else:
             return "Missing values."
     else:
         v = Vendor.query.all()
-        u = Base_Url.query.all()
-    return render_template('urls.html', vendors=v, base_urls=u)
+        u = BaseUrl.query.all()
+    return render_template('urls.html', vendors=v, baseurls=u)
 
 
 @app.route("/search", methods=["GET", "POST"])
 def sequence():
     if request.method == "POST":
-        print("Searching...")
-        id = 1
-        res = Sequence.query.get(id)
-        print("Results", res)
-    #     con = sqlite3.connect("sequence.db")
-    #     cur = con.cursor()
+        ss = request.form["search_string"]
+# TODO Search both store and name
+        looking_for = '%{0}%'.format(ss)
+        sequences = Sequence.query.filter(Sequence.name.ilike(looking_for))
 
-    #     cur.execute(
-    #         "SELECT storename, name, url FROM sequences "
-    #         + "where lower(name) like lower(?) ORDER BY storename, name",
-    #         ("%{}%".format(request.form["search_string"]),),
-    #     )
         return render_template(
              "sequence.html",
              title="Found Sequences (" + request.form["search_string"] + ")",
-             records={},
+             sequences=sequences,
          )
 
     return render_template("sequence.html", title="Find A Sequence")
@@ -117,11 +110,11 @@ app.config.from_object("config")
 def session_commit():
     try:
         db.session.commit()
-        return jsonify(meta = STRING_SUCCESS)
+        return jsonify(meta=STRING_SUCCESS)
     except exc.IntegrityError:
         print("IntegrityError while adding new user")
         db.session.rollback()
-        return jsonify(meta = STRING_FAIL)
+        return jsonify(meta=STRING_FAIL)
 
 
 if __name__ == 'app':

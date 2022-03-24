@@ -15,8 +15,8 @@
     </form>
     <div id="urllist">
         <table><tr><th>ID</th><th>URL</th><th>Vendor ID</th></tr>
-        {% for base_url in base_urls %}
-            <tr><td>{{base_url.id}}</td><td>{{base_url.url}}</td><td>{{base_url.vendor_id}}</td></tr>
+        {% for baseurl in baseurls %}
+            <tr><td>{{baseurl.id}}</td><td>{{baseurl.url}}</td><td>{{baseurl.vendor_id}}</td></tr>
         {% endfor %}
         </table>
     </div>

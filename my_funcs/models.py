@@ -24,7 +24,7 @@ class Vendor(Base):
     __tablename__ = "vendor"
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    base_urls = Column(String)
+    baseurls = Column(String)
 
 
 class Urls(Base):
