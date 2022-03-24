@@ -6,11 +6,12 @@
       <label>Name</label>
       <input name="name" type="text" required>
       <input type="submit" />
-    </div>
+    </form>
     <div id="vendorlist">
-      <p>Vendor Name</p>
+        <table><tr><th>ID</th><th>Vendor Name</th></tr>
       {% for vendor in vendors %}
-        <p>{{vendor.name}}</p>
+            <tr><td>{{vendor.id}}</td><td>{{vendor.name}}</td></tr>
       {% endfor %}
+        </table>
   </div>
 {% endblock %}

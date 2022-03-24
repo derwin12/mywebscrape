@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}URLS List{% endblock %}
+
+{% block content %}
+    <form name="url-registration-form" action="{{ url_for('register_url') }}" method='post'>
+      <label>Name</label>
+      <input name="url" type="text" required>
+    <select name="vendor_id" method="GET" action="/">
+        <option value= "{{vendors[0].id}}" SELECTED>{{vendors[0].name}}</option>
+        {% for vendor in vendors[1:] %}
+        <option value= "{{vendor.id}}">{{vendor.name}}</option>
+        {% endfor %}
+    </select>
+        <input type="submit" />
+    </form>
+    <div id="urllist">
+        <table><tr><th>ID</th><th>URL</th><th>Vendor ID</th></tr>
+        {% for base_url in base_urls %}
+            <tr><td>{{base_url.id}}</td><td>{{base_url.url}}</td><td>{{base_url.vendor_id}}</td></tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}
