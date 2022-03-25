@@ -44,7 +44,7 @@ class Sequence(db.Model):  # type: ignore
 def index():
     sequences = Sequence.query.join(Vendor)\
         .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"))\
-        .limit(10)
+        .limit(25)
 
     return render_template(
         "sequence.html",
