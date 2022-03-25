@@ -1,4 +1,4 @@
-# mywebscrape
+# xLights Sequences For Sale Scraper
 #
 #
 # Scraping sequences
