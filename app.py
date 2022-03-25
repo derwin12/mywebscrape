@@ -3,4 +3,5 @@
 from app import app
 
 if __name__ == "__main__":
-    app.run()
+    print("Starting ....")
+    app.run(port=5000)

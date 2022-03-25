@@ -122,6 +122,5 @@ def session_commit():
 
 
 if __name__ == 'main':
-    print("Running app...", __name__)
     db.create_all()
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=5000)
