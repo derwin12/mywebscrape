@@ -4,12 +4,11 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from my_funcs import insSequence
+from my_funcs import insert_sequence
 
-BASEURLS = ["https://pixelperfectsequences.com/collections/christmas-2",
-            "https://pixelperfectsequences.com/collections/halloween-sequences",
-            ]
+from app import BaseUrl, Vendor
 
+storename = 'PixelPerfectSequences'
 BASEURL = "https://pixelperfectsequences.com"
 
 
@@ -40,15 +39,18 @@ def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
 
 def main() -> None:
     products = []
-    for url in BASEURLS:
-        response = httpx.get(url)
+
+    baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name"))\
+        .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
+    for baseurl in baseurls:
+        response = httpx.get(baseurl[0].url)
         soup = BeautifulSoup(response.text, "html.parser")
         products.extend(get_products_from_page(soup))
 
     for product in products:
-        print(product.url, product.name)
-        insSequence(store="PixelPerfectSequences", url=product.url, name=product.name)
+        insert_sequence(store=storename, url=product.url, name=product.name)
 
 
 if __name__ == "__main__":
+    print(f"Loading %s..." % storename)
     main()
