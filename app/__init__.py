@@ -97,7 +97,8 @@ def sequence():
         looking_for = '%{0}%'.format(ss)
         sequences = Sequence.query.join(Vendor)\
             .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"))\
-            .filter(or_(Sequence.name.ilike(looking_for), Vendor.name.ilike(looking_for)))
+            .filter(or_(Sequence.name.ilike(looking_for), Vendor.name.ilike(looking_for)))\
+            .order_by(Vendor.name, Sequence.name)
 
         return render_template(
              "sequence.html",
