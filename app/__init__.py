@@ -121,6 +121,7 @@ def session_commit():
         return jsonify(meta=STRING_FAIL)
 
 
-if __name__ == 'app':
+if __name__ == 'main':
+    print("Running app...", __name__)
     db.create_all()
     app.run(debug=True, port=8080)
