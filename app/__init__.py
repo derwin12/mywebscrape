@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc, or_
+from sqlalchemy import exc, or_, UniqueConstraint
 
 app = Flask(__name__, instance_relative_config=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
@@ -32,9 +32,12 @@ class BaseUrl(db.Model):  # type: ignore
 
 class Sequence(db.Model):  # type: ignore
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String, nullable=False, index=True, unique=True)
+    name = db.Column(db.String, nullable=False, index=True)
     link = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
+    __table_args__ = (
+        UniqueConstraint('vendor_id', 'name', name='sequence_seq_store_idx'),
+    )
 
     def __repr__(self):
         return f"<Sequence() %r %r>" % (self.name, self.link)
@@ -122,6 +125,7 @@ def session_commit():
         return jsonify(meta=STRING_FAIL)
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
+    print("Creating database")
     db.create_all()
     app.run(debug=True, port=5000)
