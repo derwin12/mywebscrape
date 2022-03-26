@@ -10,8 +10,6 @@ from app import BaseUrl, Vendor
 
 storename = 'CFOLights'
 
-#BASEURL = "https://shop.cfolights.com/product-category/sequences/"
-
 
 @dataclass
 class Sequence:
