@@ -4,8 +4,30 @@
 # Scraping sequences
 
 #
-#https://bostickfamilylightshow.com/collections/sequences?page=1
-#https://bostickfamilylightshow.com/collections/sequences?page=2
-#https://animatedillumination.com/
-#https://shop.cfolights.com/product-category/sequences/
-#https://shop.cfolights.com/product-category/sequences/page/2/
+Animated Illumination
+Custom Light Creations
+Fairy Pixel Dust
+HolidayCoro
+Holiday Sequences
+Inspire Lightshows
+Jolly Jingle Sequences
+Laredo Lights
+Led Warehouse
+Light Em Up Sequences
+Lights of the Night
+Livermore Lights
+Magical Light Shows
+Music with Motion
+OG Sequences
+Pixel Pro Displays
+Sequence Wizards - (Closed?)
+Sequence Depot
+Show Sequences
+Syracuse Lights
+The Sequence Armory (NON-vendor?)
+LED Warehouse
+Whimsical Light Shows
+xTreme Sequences
+xLightsSequences - Free
+Showtime Bumpers
+East Ridge Lights
