@@ -14,9 +14,9 @@
         <input type="submit" />
     </form>
     <div id="urllist">
-        <table><tr><th>ID</th><th>URL</th><th>Vendor ID</th></tr>
+        <table><tr><th>ID</th><th>URL</th><th>Vendor</th></tr>
         {% for baseurl in baseurls %}
-            <tr><td>{{baseurl.id}}</td><td>{{baseurl.url}}</td><td>{{baseurl.vendor_id}}</td></tr>
+            <tr><td>{{baseurl[0].id}}</td><td>{{baseurl[0].url}}</td><td>{{baseurl.vendor_name}}</td></tr>
         {% endfor %}
         </table>
     </div>

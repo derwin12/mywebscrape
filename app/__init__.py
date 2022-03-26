@@ -87,8 +87,8 @@ def register_url():
         else:
             return "Missing values."
     else:
-        v = Vendor.query.all()
-        u = BaseUrl.query.all()
+        v = Vendor.query.order_by(Vendor.name)
+        u = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")).order_by(Vendor.name, BaseUrl.url).all()
     return render_template('urls.html', vendors=v, baseurls=u)
 
 
