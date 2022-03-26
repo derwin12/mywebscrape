@@ -2,7 +2,9 @@ import os
 from dotenv import load_dotenv
 from getfilelistpy import getfilelist
 from googleapiclient.discovery import build
-from insertData import insSequence
+from my_funcs import insert_sequence
+
+storename = 'GoogleDrive'
 
 load_dotenv()  # take environment variables from .env.
 
@@ -28,7 +30,7 @@ def main() -> None:
             for a in sorted(value[0]["files"], key=lambda x: x["name"]):
                 if a["name"].endswith("zip"):
                     try:
-                        insSequence(store="GoogleDrive", url="https://drive.google.com/uc?id=" +
+                        insert_sequence(store=storename, url="https://drive.google.com/uc?id=" +
                                                              a["id"] +
                                                              "&amp;authuser=0&amp;export=download",
                                     name=a["name"].split("--")[0] + " -- " +
@@ -36,6 +38,7 @@ def main() -> None:
                                     a["name"].split("--")[2].split(".")[0] + ")"
                                     )
                     except:
+                        print(f"Insert failed %s" % a["name"])
                         pass
 
 
