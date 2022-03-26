@@ -1,25 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href='/static/main.css' />
 </head>
 <body>
-<center>
-    <h1>{{title}}</h1>
-</center>
-<FORM action="{{url_for('sequence')}}" method="post">
-    <p>
-        <br>
-        <b>Sequence Name or Store:</b>
-        <input name="search_string" type="text" value="{{request.form.sequence}}"><br/>
-    </p>
-    <p><br>
-        <input name="request" type="Submit" value="Submit"><br/>
-    </p>
+    <h1><center>{{title}}</center></h1>
+    <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:400px">
+        <input name="search_string" type="text" placeholder="Search by store or name" value="{{request.form.sequence}}"><button type="submit"><i class="fa fa-search"></i></button></form>
+    <p></p>
     {% if sequences %}
+    <center>
     {% if sequences[0] %}
-    <h2>Search Results</h2>
-    <br>
+        <h1>Search Results</h1>
     <div id="results">
         <table class="table table-striped">
             <thead>
@@ -36,9 +31,10 @@
         </table>
     </div>
     {% else %}
-    <i>Nothing Found</i>
+        <h1>Search Results</h1>
+        <h2>Nothing Found</h2>
     {% endif %}
+    </center>
     {% endif %}
-</FORM>
 </body>
 </html>
