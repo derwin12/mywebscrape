@@ -105,7 +105,7 @@ def sequence():
 
         return render_template(
              "sequence.html",
-             title="Found Sequences (" + request.form["search_string"] + ")",
+             title="Sequence Search (" + request.form["search_string"] + ")",
              sequences=sequences,
          )
 

@@ -9,7 +9,10 @@
 <body>
     <h1><center>{{title}}</center></h1>
     <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:400px">
-        <input name="search_string" type="text" placeholder="Search by store or name" value="{{request.form.sequence}}"><button type="submit"><i class="fa fa-search"></i></button></form>
+        <input name="search_string" type="text" placeholder="Search by store or name" value="{{request.form.sequence}}">
+        <button type="submit"><i class="fa fa-search"></i>
+        </button>
+    </form>
     <p></p>
     {% if sequences %}
     <center>
@@ -32,7 +35,7 @@
     </div>
     {% else %}
         <h1>Search Results</h1>
-        <h2>Nothing Found</h2>
+        <h3><i>Nothing Found</i></h3>
     {% endif %}
     </center>
     {% endif %}
