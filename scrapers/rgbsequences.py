@@ -1,14 +1,23 @@
+from dataclasses import dataclass
 from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
 
-from my_funcs import Sequence, insSequence
+from my_funcs import insert_sequence
 
-BASEURL = "https://rgbsequences.net/shop-xlights-sequences/"
+from app import BaseUrl, Vendor
+
+storename = 'RGBSequences'
 
 
-def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
+@dataclass
+class Sequence:
+    name: str
+    url: str
+
+
+def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
     products = soup.find_all("li", class_="type-product")
 
@@ -16,26 +25,30 @@ def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
     for product in products:
         sequence_name = product.find(class_="woocommerce-loop-product__title").text
         # song, artist = sequence_name.split(" - ")
-        product_url = urljoin(BASEURL, product.find("a")["href"])
+        product_url = urljoin(url, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
 
     next_page = soup.find(class_="next")
     if next_page:
         response = httpx.get(next_page["href"])  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(next_soup))
+        sequences.extend(get_products_from_page(next_soup, url))
 
     return sequences
 
 
 def main() -> None:
+    products = []
 
-    response = httpx.get(BASEURL)
-    soup = BeautifulSoup(response.text, "html.parser")
-    products = get_products_from_page(soup)
+    baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
+        .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
+    for baseurl in baseurls:
+        response = httpx.get(baseurl[0].url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        products = get_products_from_page(soup, baseurl[0].url)
 
     for product in products:
-        insSequence(store="RGBSequences", url=product.url, name=product.name)
+        insert_sequence(store=storename, url=product.url, name=product.name)
 
 
 if __name__ == "__main__":
