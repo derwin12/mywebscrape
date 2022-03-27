@@ -8,7 +8,8 @@ from my_funcs import insert_sequence
 
 from app import BaseUrl, Vendor
 
-storename = 'Syracuse Lights'
+storename = 'xTreme Sequences'
+BASEURL = 'https://www.xtremesequences.com/index.php?'
 
 
 @dataclass
@@ -19,11 +20,11 @@ class Sequence:
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
-    products = soup.find_all("div", role="gridcell", class_="_1ozXL")
+    products = soup.find_all("li", class_="cNexusProduct")
 
     sequences = []
     for product in products:
-        sequence_name = product.find("div", class_="XUUsC")["title"]
+        sequence_name = product.find("a", class_="").text.strip()
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
@@ -38,8 +39,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
-    products = []
-
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:

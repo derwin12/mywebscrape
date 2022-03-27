@@ -47,8 +47,8 @@ def main() -> None:
         soup = BeautifulSoup(response.text, "html.parser")
         products.extend(get_products_from_page(soup))
 
-    for product in products:
-        insert_sequence(store=storename, url=product.url, name=product.name)
+        for product in products:
+            insert_sequence(store=storename, url=product.url, name=product.name)
 
 
 if __name__ == "__main__":

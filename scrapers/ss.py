@@ -42,8 +42,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
-    products = []
-
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
@@ -51,8 +50,8 @@ def main() -> None:
         soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, baseurl[0].url)
 
-    for product in products:
-        insert_sequence(store=storename, url=product.url, name=product.name)
+        for product in products:
+            insert_sequence(store=storename, url=product.url, name=product.name)
 
 
 if __name__ == "__main__":
