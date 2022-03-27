@@ -21,7 +21,6 @@ Pixel Pro Displays
 Sequence Wizards - (Closed?)
 Sequence Depot
 Show Sequences
-Syracuse Lights
 The Sequence Armory (NON-vendor?)
 LED Warehouse
 Whimsical Light Shows
