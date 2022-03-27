@@ -4,27 +4,29 @@
 # Scraping sequences
 
 #
-Custom Light Creations
-Fairy Pixel Dust
-HolidayCoro
-Holiday Sequences
-Inspire Lightshows
-Jolly Jingle Sequences
-Laredo Lights
-Led Warehouse
-Light Em Up Sequences
-Lights of the Night
-Livermore Lights
-Magical Light Shows
-Music with Motion
-Pixel Pro Displays
-Sequence Wizards - (Closed?)
-Sequence Depot
-Show Sequences
-The Sequence Armory (NON-vendor?)
-LED Warehouse
-Whimsical Light Shows
-xTreme Sequences
-xLightsSequences - Free
-Showtime Bumpers
-East Ridge Lights
+<i>Still To Do</i>
+<uol>
+ <li>Custom Light Creations</li>
+<li>Fairy Pixel Dust</li>
+<li>HolidayCoro</li>
+<li>Holiday Sequences</li>
+<li>Inspire Lightshows</li>
+<li>Jolly Jingle Sequences</li>
+<li>Laredo Lights</li>
+<li>Led Warehouse</li>
+<li>Light Em Up Sequences</li>
+<li>Lights of the Night</li>
+<li>Livermore Lights</li>
+<li>Magical Light Shows</li>
+<li>Music with Motion</li>
+<li>Pixel Pro Displays</li>
+<li>Sequence Wizards - (Closed?)</li>
+<li>Sequence Depot</li>
+<li>Show Sequences</li>
+<li>The Sequence Armory (NON-vendor?)</li>
+<li>LED Warehouse</li>
+<li>Whimsical Light Shows</li>
+<li>xLightsSequences - Free</li>
+<li>Showtime Bumpers</li>
+<li>East Ridge Lights</li>
+</uol>
