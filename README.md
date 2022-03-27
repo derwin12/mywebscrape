@@ -4,7 +4,6 @@
 # Scraping sequences
 
 #
-Animated Illumination
 Custom Light Creations
 Fairy Pixel Dust
 HolidayCoro
@@ -18,7 +17,6 @@ Lights of the Night
 Livermore Lights
 Magical Light Shows
 Music with Motion
-OG Sequences
 Pixel Pro Displays
 Sequence Wizards - (Closed?)
 Sequence Depot
