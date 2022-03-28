@@ -2,8 +2,10 @@ bs4~=0.0.1
 beautifulsoup4~=4.10.0
 httpx~=0.22.0
 requests~=2.27.1
-python-dotenv~=0.19.2
+python-dotenv==0.20.0
 getfilelistpy~=1.0.7
 Flask~=2.0.3
-google-api-python-client==2.41.0
+google-api-python-client==2.42.0
 SQLAlchemy==1.4.32
+chromedriver-py~=99.0.4844
+selenium==4.1.3

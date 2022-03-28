@@ -6,7 +6,6 @@
 #
 <i>Still To Do</i>
 <uol>
- <li>Custom Light Creations</li>
 <li>Fairy Pixel Dust</li>
 <li>HolidayCoro</li>
 <li>Holiday Sequences</li>
