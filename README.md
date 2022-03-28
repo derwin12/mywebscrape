@@ -7,7 +7,6 @@
 <i>Still To Do</i>
 
 <li>HolidayCoro</li>
-<li>Jolly Jingle Sequences</li>
 <li>Laredo Lights</li>
 <li>Led Warehouse</li>
 <li>Light Em Up Sequences</li>
