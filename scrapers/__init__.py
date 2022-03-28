@@ -1,2 +1,3 @@
 __all__ = ["ai", "blinky", "bostik", "cfol", "clc", "fpd", "hs", "inspire", "jjs", "led", "og", "pps",
-           "rgbsequences", "sequence_solutions", "sl", "ss", "visionarylightshows", "xtreme"]
+           "lightem", "livermore", "lotn", "magical", "rgbsequences", "sd", "sequence_solutions", "sl",
+           "ssequence", "ss", "visionarylightshows", "xtreme"]
