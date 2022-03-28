@@ -8,8 +8,6 @@
 
 <li>HolidayCoro</li>
 <li>Laredo Lights</li>
-<li>Light Em Up Sequences</li>
-<li>Lights of the Night</li>
 <li>Livermore Lights</li>
 <li>Magical Light Shows</li>
 <li>Music with Motion</li>
