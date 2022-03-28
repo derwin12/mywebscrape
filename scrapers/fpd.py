@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
@@ -8,8 +7,10 @@ from bs4 import BeautifulSoup
 from my_funcs import insert_sequence
 
 from app import BaseUrl, Vendor
+import re
 
-storename = 'Animated Illumination'
+storename = 'Fairy Pixel Dust'
+BASEURL = "https://www.fairypixeldust.com/"
 
 
 @dataclass
@@ -19,16 +20,15 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-
-    products = soup.find_all("div", class_="edd_download_inner")
+    products = soup.find_all("li", attrs={"data-hook": "product-list-grid-item"})
 
     sequences = []
     for product in products:
-        s = product.find(class_="edd_download_title").text
+        s = product.find("h3").text.strip()
         pattern = r'[^A-Za-z0-9\-\'\.()]+'
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")
-        product_url = urljoin(url, product.find("a")["href"])
+        product_url = urljoin(BASEURL, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
 
     next_page = soup.find(class_="next")
@@ -44,9 +44,9 @@ def main() -> None:
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
-# Using page saved since I was flagged as robot
-        response = open("C:\\Users\\elcrapamundo\\PycharmProjects\\webscrape\\app\\Sample-Animated Illumination.html")
-        soup = BeautifulSoup(response, "html.parser")
+        response = httpx.get(baseurl[0].url)
+        print(f"Loading %s" % baseurl[0].url)
+        soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, baseurl[0].url)
 
         for product in products:
