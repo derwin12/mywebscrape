@@ -5,9 +5,8 @@
 
 #
 <i>Still To Do</i>
-<uol>
+
 <li>HolidayCoro</li>
-<li>Inspire Lightshows</li>
 <li>Jolly Jingle Sequences</li>
 <li>Laredo Lights</li>
 <li>Led Warehouse</li>
@@ -26,4 +25,4 @@
 <li>xLightsSequences - Free</li>
 <li>Showtime Bumpers</li>
 <li>East Ridge Lights</li>
-</uol>
+
