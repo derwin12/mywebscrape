@@ -8,7 +8,6 @@
 
 <li>HolidayCoro</li>
 <li>Laredo Lights</li>
-<li>Led Warehouse</li>
 <li>Light Em Up Sequences</li>
 <li>Lights of the Night</li>
 <li>Livermore Lights</li>
