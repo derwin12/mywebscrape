@@ -10,6 +10,7 @@ from app import BaseUrl, Vendor
 import re
 
 storename = 'Jolly Jingle Sequences'
+page = 1
 
 
 @dataclass
@@ -19,6 +20,7 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+    global page
     products = soup.find_all("li", attrs={"data-hook": "product-list-grid-item"})
 
     sequences = []
@@ -30,12 +32,14 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         product_url = urljoin(url, product.find("a")["href"])
         sequences.append(Sequence(sequence_name, product_url))
 
-#    next_page = soup.find("button", attrs={"data-hook": "load-more-button"})
-# TODO: how to load more pages
-# if next_page:
-#   response = httpx.get(next_page["href"])  # type: ignore
-#  next_soup = BeautifulSoup(response.text, "html.parser")
-# sequences.extend(get_products_from_page(next_soup, url))
+    has_next = soup.find('button', attrs={"data-hook": "load-more-button"})
+    if has_next:
+        page = page + 1
+        next_page = re.sub(r'\?page=[0-9]*', '', url) + "?page=" + str(page)
+        print(f"Loading %s" % next_page)
+        response = httpx.get(next_page)  # type: ignore
+        next_soup = BeautifulSoup(response.text, "html.parser")
+        sequences.extend(get_products_from_page(next_soup, url))
 
     return sequences
 

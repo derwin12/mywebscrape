@@ -35,6 +35,7 @@ class Sequence(db.Model):  # type: ignore
     name = db.Column(db.String, nullable=False, index=True)
     link = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
+    last_updated = db.Column(db.String, nullable=True)
     __table_args__ = (
         UniqueConstraint('vendor_id', 'name', name='sequence_seq_store_idx'),
     )
