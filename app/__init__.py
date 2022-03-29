@@ -36,9 +36,11 @@ class Sequence(db.Model):  # type: ignore
     link = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
     last_updated = db.Column(db.String, nullable=True)
+    first_seen = db.Column(db.String, nullable=True)
     __table_args__ = (
-        UniqueConstraint('vendor_id', 'name', name='sequence_seq_store_idx'),
+        UniqueConstraint(('vendor_id', 'name', 'link'),  name='sequence_seq_store_idx'),
     )
+    #CREATE UNIQUE INDEX "sequence_seq_store_id" ON "sequence" ( "vendor_id",  "name",  "link")
 
     def __repr__(self):
         return f"<Sequence() %r %r>" % (self.name, self.link)
