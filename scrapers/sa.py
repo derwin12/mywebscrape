@@ -9,7 +9,7 @@ from my_funcs import insert_sequence
 from app import BaseUrl, Vendor
 import re
 
-storename = 'Sequence Depot'
+storename = 'The Sequence Armory'
 
 
 @dataclass
@@ -19,11 +19,10 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-    p = soup.find("div", class_="subcategories")
-    products = p.find_all("li")
+    products = soup.find_all("li", class_="ast-col-sm-12")
     sequences = []
     for product in products:
-        s = product.find(class_="name").text.strip()
+        s = product.find("h2").text.strip()
         pattern = r'[^A-Za-z0-9\-\'\.()&]+'
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")

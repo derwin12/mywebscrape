@@ -21,6 +21,7 @@ class Sequence:
 
 
 def main() -> None:
+    print(f"Loading UXSG Spreadsheet")
     dir = os.getcwd() + "\\..\\app\\Data\\"
     wb = load_workbook(filename = dir + filename, data_only=True)
     sheet_obj = wb.active

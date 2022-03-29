@@ -13,6 +13,7 @@ def main() -> None:
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
         page = requests.get(baseurl[0].url)
+        print(f"Loading %s" % baseurl[0].url)
         soup = BeautifulSoup(page.content, "html.parser")
 
         results = soup.find(id="content")

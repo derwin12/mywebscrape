@@ -77,6 +77,7 @@ def main() -> None:
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
+        print(f"Loading %s" % baseurl[0].url)
         service_object = Service.Service(binary_path)
         driver = webdriver.Chrome(service=service_object)
         driver.get(baseurl[0].url)

@@ -19,9 +19,7 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-
     products = soup.find_all("div", class_="edd_download_inner")
-
     sequences = []
     for product in products:
         s = product.find(class_="edd_download_title").text
@@ -46,6 +44,7 @@ def main() -> None:
     for baseurl in baseurls:
 # Using page saved since I was flagged as robot
         response = open("C:\\Users\\elcrapamundo\\PycharmProjects\\webscrape\\app\\Sample-Animated Illumination.html")
+        print(f"Loading %s" % baseurl[0].url)
         soup = BeautifulSoup(response, "html.parser")
         products = get_products_from_page(soup, baseurl[0].url)
 

@@ -52,8 +52,8 @@ def main() -> None:
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
-        response = httpx.get(baseurl[0].url)
         print(f"Loading %s" % baseurl[0].url)
+        response = httpx.get(baseurl[0].url)
         soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, baseurl[0].url)
 

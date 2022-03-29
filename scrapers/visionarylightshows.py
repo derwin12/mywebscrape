@@ -18,9 +18,7 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-
     products = soup.find_all("div", class_="product-card")
-
     sequences = []
     for product in products:
         sequence_name = product.find("a").text.strip()
@@ -37,11 +35,10 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
-    products = []
-
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
+        print(f"Loading %s" % baseurl[0].url)
         response = httpx.get(baseurl[0].url)
         soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, baseurl[0].url)
