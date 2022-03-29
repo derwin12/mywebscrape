@@ -4,7 +4,7 @@ httpx~=0.22.0
 requests~=2.27.1
 python-dotenv==0.20.0
 getfilelistpy~=1.0.7
-Flask~=2.0.3
+Flask==2.1.0
 google-api-python-client==2.42.0
 SQLAlchemy==1.4.32
 chromedriver-py~=99.0.4844

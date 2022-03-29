@@ -22,7 +22,6 @@ class Sequence:
 
 def main() -> None:
     dir = os.getcwd() + "\\..\\app\\Data\\"
-    print(dir)
     wb = load_workbook(filename = dir + filename, data_only=True)
     sheet_obj = wb.active
     sequences = []
