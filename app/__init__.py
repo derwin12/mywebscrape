@@ -38,7 +38,7 @@ class Sequence(db.Model):  # type: ignore
     last_updated = db.Column(db.String, nullable=True)
     first_seen = db.Column(db.String, nullable=True)
     __table_args__ = (
-        UniqueConstraint(('vendor_id', 'name', 'link'),  name='sequence_seq_store_idx'),
+        UniqueConstraint('vendor_id', 'name', 'link',  name='sequence_seq_store_idx'),
     )
     #CREATE UNIQUE INDEX "sequence_seq_store_id" ON "sequence" ( "vendor_id",  "name",  "link")
 
