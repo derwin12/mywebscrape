@@ -17,6 +17,7 @@ BASEURL = "https://www.fairypixeldust.com/"
 class Sequence:
     name: str
     url: str
+    price: str
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
@@ -29,7 +30,8 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(BASEURL, product.find("a")["href"])
-        sequences.append(Sequence(sequence_name, product_url))
+        price = "-"
+        sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")
     if next_page:
@@ -50,7 +52,7 @@ def main() -> None:
         products = get_products_from_page(soup, baseurl[0].url)
 
         for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name)
+            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":

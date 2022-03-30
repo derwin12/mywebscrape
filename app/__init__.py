@@ -39,6 +39,7 @@ class Sequence(db.Model):  # type: ignore
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
     last_updated = db.Column(db.String, nullable=True)
     first_seen = db.Column(db.String, nullable=True)
+    price = db.Column(db.String, nullable=True)
     __table_args__ = (
         db.UniqueConstraint('vendor_id', 'name', 'link',  name='sequence_seq_store_idx'),
     )
@@ -53,6 +54,7 @@ def index():
     sequences = Sequence.query.join(Vendor)\
         .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"),
                      func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
+                     func.coalesce(Sequence.price,'-').label("price"),
                     (func.date(func.current_date(), '-2 months') <
                      func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
                     Sequence.first_seen) \
@@ -115,10 +117,13 @@ def sequence():
             .add_columns(Sequence.id, Sequence.name, Sequence.link,
                          func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
                          Vendor.name.label("vendor_name"),
+                         func.coalesce(Sequence.price,'-').label("price"),
                          (func.date(func.current_date(), '-2 months') <
                           func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
                          Sequence.first_seen)\
-            .filter(or_(Sequence.name.ilike(looking_for), Vendor.name.ilike(looking_for)))\
+            .filter(or_(Sequence.name.ilike(looking_for),
+                        Vendor.name.ilike(looking_for),
+                        Sequence.price.ilike(looking_for)))\
             .order_by(Vendor.name, Sequence.name)
         print("SQL=", sequences)
 

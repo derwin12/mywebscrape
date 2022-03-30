@@ -3,10 +3,10 @@ from datetime import datetime
 from app import Sequence, Vendor, db
 
 
-def insert_sequence(store, url, name):
+def insert_sequence(store, url, name, price = '-'):
     vendor = Vendor.query.filter(Vendor.name == store).first()
-    sequence = Sequence(name=name, link=url, vendor_id=vendor.id, last_updated=datetime.now())
-    print("Adding %s" % sequence.name)
+    sequence = Sequence(name=name, link=url, vendor_id=vendor.id, last_updated=datetime.now(), price=price)
+    print("Adding %s [%s]" % (sequence.name, price))
     seq = Sequence.query.filter(Sequence.link == url and Sequence.vendor_id == vendor.id).first()
     Sequence.query.filter(Sequence.link == url and Sequence.vendor_id == vendor.id).delete()
     if seq and seq.first_seen:

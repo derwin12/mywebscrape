@@ -14,6 +14,7 @@ storename = 'SequenceSol'
 class Sequence:
     name: str
     url: str
+    price: str
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
@@ -45,7 +46,7 @@ def main() -> None:
         products = get_products_from_page(soup, baseurl[0].url)
 
         for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name)
+            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":

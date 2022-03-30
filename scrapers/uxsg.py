@@ -18,6 +18,7 @@ author_column = 9
 class Sequence:
     name: str
     url: str
+    price: str
 
 
 def main() -> None:
@@ -37,10 +38,11 @@ def main() -> None:
                 product_url = BASEURL + urllib.parse.quote(sheet_obj.cell(column=name_column, row=row).value.strip() +\
                     " " + sheet_obj.cell(column=artist_column, row=row)._value)
 
-                sequences.append(Sequence(sequence_name, product_url))
+                price = "Free"
+                sequences.append(Sequence(sequence_name, product_url, price))
 
     for product in sequences:
-        insert_sequence(store=storename, url=product.url, name=product.name)
+        insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":

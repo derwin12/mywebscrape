@@ -35,8 +35,8 @@ def main() -> None:
                                                              "&amp;authuser=0&amp;export=download",
                                     name=a["name"].split("--")[0] + " -- " +
                                     a["name"].split("--")[1] + " (" +
-                                    a["name"].split("--")[2].split(".")[0] + ")"
-                                    )
+                                    a["name"].split("--")[2].split(".")[0] + ")",
+                                    price="Free")
                     except:
                         print(f"Insert failed %s" % a["name"])
                         pass

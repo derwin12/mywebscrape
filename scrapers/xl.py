@@ -16,9 +16,7 @@ storename = 'xLightsSequences'
 class Sequence:
     name: str
     url: str
-
-
-BASEURL = "https://showstoppersequences-com.3dcartstores.com/"
+    price: str
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
@@ -33,7 +31,8 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         product_url = urljoin(url,
                               product.find("div",
                                      class_="structItem-title").find("a", attrs={"data-tp-primary": "on"})["href"])
-        sequences.append(Sequence(sequence_name, product_url))
+        price = "Free"
+        sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="pageNav-jump pageNav-jump--next")
     if next_page:
@@ -57,7 +56,7 @@ def main() -> None:
         products = get_products_from_page(soup, baseurl[0].url)
 
         for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name)
+            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":

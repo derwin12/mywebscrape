@@ -25,6 +25,7 @@
                 <th></th>
                 <th>Store Name</th>
                 <th>Sequence</th>
+                <th>Price</th>
                 <th>Last Seen</th>
             </tr>
             </thead>
@@ -35,9 +36,10 @@
             {% else %}
             <td></td>
             {% endif %}
-            <td>{{ sequence.vendor_name }}</td>
+            <td style="text-align:center">{{ sequence.vendor_name }}</td>
             <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
-            <td>{{ sequence.last_updated }}</td>
+            <td style="text-align:center">{{ sequence.price }}</td>
+            <td style="text-align:center">{{ sequence.last_updated }}</td>
         </tr>
         {% endfor %}
         </table>
