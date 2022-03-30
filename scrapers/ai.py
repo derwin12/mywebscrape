@@ -28,23 +28,31 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
-        sequences.append(Sequence(sequence_name, product_url, price))
+        if product.find("div", class_="edd_price_options"):
+            p_text = product.find("div", class_="edd_price_options")
 
-    next_page = soup.find(class_="next")
-    if next_page:
-        response = httpx.get(next_page["href"])  # type: ignore
-        next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(next_soup, url))
+            p_text2 = p_text.find("input")["data-price"]
+            if p_text2:
+                price = p_text.find("input")["data-price"]
+            else:
+                price = "-"
+        else:
+            p_text = product.find("a", class_="edd-add-to-cart")
+            if p_text:
+                price = p_text["data-price"]
+            else:
+                price = "Free"
+        sequences.append(Sequence(sequence_name, product_url, price))
 
     return sequences
 
 
 def main() -> None:
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
-# Using page saved since I was flagged as robot
+        # Using page saved since I was flagged as robot
         response = open("C:\\Users\\elcrapamundo\\PycharmProjects\\webscrape\\app\\Sample-Animated Illumination.html")
         print(f"Loading %s" % baseurl[0].url)
         soup = BeautifulSoup(response, "html.parser")

@@ -20,6 +20,7 @@ resource = {
 
 
 def main():
+
     res = getfilelist.GetFileList(resource)  # or r = getfilelist.GetFolderTree(resource)
 
     for key, value in res.items():

@@ -35,6 +35,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:

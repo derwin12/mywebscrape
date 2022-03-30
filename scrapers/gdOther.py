@@ -9,7 +9,7 @@ storename = 'GoogleDrive'
 load_dotenv()  # take environment variables from .env.
 
 API_KEY = os.getenv("API_KEY", "Missing API_KEY")
-FOLDER_ID = os.getenv("FOLDER_ID", "Missing FOLDER_ID")
+FOLDER_ID = os.getenv("FOLDER_ID_OTHER", "Missing FOLDER_ID")
 service = build('drive', 'v3', developerKey=API_KEY)
 
 items = []
@@ -34,10 +34,10 @@ def main() -> None:
                         insert_sequence(store=storename, url="https://drive.google.com/uc?id=" +
                                                              a["id"] +
                                                              "&amp;authuser=0&amp;export=download",
-                                    name=a["name"].split("--")[0] + " -- " +
-                                    a["name"].split("--")[1] + " (" +
-                                    a["name"].split("--")[2].split(".")[0] + ")",
-                                    price="Free")
+                                        name=a["name"].split("--")[0] + " -- " +
+                                        a["name"].split("--")[1] + " (" +
+                                        a["name"].split("--")[2].split(".")[0] + ")",
+                                        price="Free")
                     except:
                         print(f"Insert failed %s" % a["name"])
                         pass

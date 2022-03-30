@@ -59,11 +59,15 @@ def index():
                      func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
                     Sequence.first_seen) \
             .order_by(Sequence.first_seen.desc()).limit(25)
+    vendor_count = Vendor.query.count()
+    sequence_count = Sequence.query.count()
 
     return render_template(
         "sequence.html",
         title="List Sequences",
         sequences=sequences,
+        vendor_count=vendor_count,
+        sequence_count=sequence_count,
     )
 
 
@@ -127,10 +131,15 @@ def sequence():
             .order_by(Vendor.name, Sequence.name)
         print("SQL=", sequences)
 
+        vendor_count = Vendor.query.count()
+        sequence_count = Sequence.query.count()
+
         return render_template(
              "sequence.html",
              title="Sequence Search (" + request.form["search_string"] + ")",
              sequences=sequences,
+             vendor_count=vendor_count,
+             sequence_count=sequence_count,
          )
 
     return render_template("sequence.html", title="Find A Sequence")

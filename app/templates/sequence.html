@@ -14,6 +14,9 @@
         </button>
     </form>
     <p></p>
+    <center><table><tr><td class="small">Vendor Count: {{ vendor_count }}</td>
+        <td>&nbsp;</td>
+        <td class="small">Sequence Count: {{ sequence_count }}</td></tr></table>
     {% if sequences %}
     <center>
     {% if sequences[0] %}
@@ -26,7 +29,7 @@
                 <th>Store Name</th>
                 <th>Sequence</th>
                 <th>Price</th>
-                <th>Last Seen</th>
+                <th>Last Updated</th>
             </tr>
             </thead>
         {% for sequence in sequences %}

@@ -76,6 +76,7 @@ def document_initialised(driver):
 
 
 def main() -> None:
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:

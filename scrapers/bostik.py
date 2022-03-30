@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
@@ -25,9 +26,17 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     sequences = []
     for product in products:
         sequence_name = product.find(class_="product-card__name").text
-        # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        p = product.find("div", class_="product-card__price").text
+        pattern = r'[^0-9\.\$]+'
+        p_text = re.sub(pattern, ' ', p).strip()
+        pattern = re.compile("(\$[0-9]+).*(\$[0-9]+)")
+        try:
+            price = pattern.search(p_text)[2]
+        except:
+            price = p_text
+        if price == "$0":
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")
@@ -41,6 +50,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:

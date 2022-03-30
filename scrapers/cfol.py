@@ -26,11 +26,12 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = product.find(class_="woocommerce-loop-product__title").text
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        price = product.find("span",class_="woocommerce-Price-amount amount").text
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")
     if next_page:
+        print(f"Loading %s" % (urljoin(url, next_page["href"])))
         response = httpx.get(next_page["href"])  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(next_soup, url))
@@ -39,6 +40,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:

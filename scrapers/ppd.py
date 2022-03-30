@@ -28,7 +28,9 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        price = product.find("bdi").text
+        if price == "$0.00":
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find("link", attrs={"rel": "next"})
@@ -42,6 +44,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 
 def main() -> None:
+    print(f"Loading %s" % storename)
     baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
