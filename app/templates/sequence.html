@@ -7,7 +7,7 @@
     <link rel="stylesheet" href='/static/main.css' />
 </head>
 <body>
-    <h1><center>{{title}}</center></h1>
+<center><h1>{{title}}</h1></center>
     <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:400px">
         <input name="search_string" type="text" placeholder="Search by store or name" value="{{request.form.sequence}}">
         <button type="submit"><i class="fa fa-search"></i>
@@ -22,13 +22,22 @@
         <table class="table table-striped">
             <thead>
             <tr>
+                <th></th>
                 <th>Store Name</th>
                 <th>Sequence</th>
+                <th>Last Seen</th>
             </tr>
             </thead>
         {% for sequence in sequences %}
         <tr>
-            <td>{{ sequence.vendor_name }}</td><td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
+            {% if sequence.is_new %}
+            <td><img src='/static/new.gif' width="25" height="30"></td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            <td>{{ sequence.vendor_name }}</td>
+            <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
+            <td>{{ sequence.last_updated }}</td>
         </tr>
         {% endfor %}
         </table>

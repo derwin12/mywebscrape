@@ -1,6 +1,8 @@
+import datetime
+
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc, or_, UniqueConstraint
+from sqlalchemy import exc, or_, func
 
 app = Flask(__name__, instance_relative_config=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
@@ -38,9 +40,9 @@ class Sequence(db.Model):  # type: ignore
     last_updated = db.Column(db.String, nullable=True)
     first_seen = db.Column(db.String, nullable=True)
     __table_args__ = (
-        UniqueConstraint('vendor_id', 'name', 'link',  name='sequence_seq_store_idx'),
+        db.UniqueConstraint('vendor_id', 'name', 'link',  name='sequence_seq_store_idx'),
     )
-    #CREATE UNIQUE INDEX "sequence_seq_store_id" ON "sequence" ( "vendor_id",  "name",  "link")
+    #  CREATE UNIQUE INDEX "sequence_seq_store_id" ON "sequence" ( "vendor_id",  "name",  "link")
 
     def __repr__(self):
         return f"<Sequence() %r %r>" % (self.name, self.link)
@@ -91,7 +93,8 @@ def register_url():
             return "Missing values."
     else:
         v = Vendor.query.order_by(Vendor.name)
-        u = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")).order_by(Vendor.name, BaseUrl.url).all()
+        u = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name"))\
+            .order_by(Vendor.name, BaseUrl.url).all()
     return render_template('urls.html', vendors=v, baseurls=u)
 
 
@@ -101,10 +104,19 @@ def sequence():
         ss = request.form["search_string"]
 
         looking_for = '%{0}%'.format(ss)
+        weeksago = datetime.timedelta(weeks=6)
+        print(weeksago)
+
         sequences = Sequence.query.join(Vendor)\
-            .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"))\
+            .add_columns(Sequence.id, Sequence.name, Sequence.link,
+                         func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
+                         Vendor.name.label("vendor_name"),
+                         (func.date(func.current_date(), '-2 months') <
+                          func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
+                         Sequence.first_seen)\
             .filter(or_(Sequence.name.ilike(looking_for), Vendor.name.ilike(looking_for)))\
             .order_by(Vendor.name, Sequence.name)
+        print("SQL=", sequences)
 
         return render_template(
              "sequence.html",
