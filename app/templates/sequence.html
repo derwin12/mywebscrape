@@ -9,7 +9,7 @@
 <body>
 <center><h1>{{title}}</h1></center>
     <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:400px">
-        <input name="search_string" type="text" placeholder="Search by store or name" value="{{request.form.sequence}}">
+        <input name="search_string" type="text" placeholder="Search by store or sequence" value="{{request.form.sequence}}">
         <button type="submit"><i class="fa fa-search"></i>
         </button>
     </form>
@@ -31,7 +31,7 @@
         {% for sequence in sequences %}
         <tr>
             {% if sequence.is_new %}
-            <td><img src='/static/new.gif' width="25" height="30"></td>
+            <td><img src='/static/new.gif' width="25" height="18"></td>
             {% else %}
             <td></td>
             {% endif %}

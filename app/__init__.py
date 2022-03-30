@@ -51,8 +51,12 @@ class Sequence(db.Model):  # type: ignore
 @app.route("/")
 def index():
     sequences = Sequence.query.join(Vendor)\
-        .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"))\
-        .limit(25)
+        .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"),
+                     func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
+                    (func.date(func.current_date(), '-2 months') <
+                     func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
+                    Sequence.first_seen) \
+            .order_by(Sequence.first_seen.desc()).limit(25)
 
     return render_template(
         "sequence.html",
