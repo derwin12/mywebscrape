@@ -27,9 +27,10 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         s = product.find("a", class_="v-product__title").text.strip()
         pattern = r'[^A-Za-z0-9\-\'\.()&]+'
         sequence_name = re.sub(pattern, ' ', s).strip()
-        # song, artist = sequence_name.split(" - ")
         product_url = product.find("a")["href"]
-        price = "-"
+        price_text = product.find("div", class_="product_productprice").text
+        pattern = re.compile(r'(\$\d[\d,.]*)')
+        price = pattern.search(price_text).group(1)
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")

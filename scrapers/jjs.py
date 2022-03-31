@@ -31,7 +31,9 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        price_text = product.find("span", attrs={"data-hook": "product-item-price-to-pay"}).text
+        pattern = re.compile(r'(\$\d[\d,.]*)')
+        price = pattern.search(price_text).group(1)
         sequences.append(Sequence(sequence_name, product_url, price))
 
     has_next = soup.find('button', attrs={"data-hook": "load-more-button"})

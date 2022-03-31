@@ -28,7 +28,9 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = re.sub(pattern, ' ', s).strip()
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        price_text = product.find("bdi").text
+        pattern = re.compile(r'(\$\d[\d,.]*)')
+        price = pattern.search(price_text).group(1)
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_tag = soup.find("span", class_="pager-text right")

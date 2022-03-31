@@ -47,7 +47,15 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        pattern = re.compile(r'(\$\d[\d,.]*)')
+        price_text = pattern.search(product.text)
+        if price_text:
+            price = price_text.group(1)
+        else:
+            print("Problems with %s" % sequence_name)
+            price = "-"
+        if price == "$0.00":
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     if not exitloop:
