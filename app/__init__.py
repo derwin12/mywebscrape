@@ -54,11 +54,11 @@ def index():
     sequences = Sequence.query.join(Vendor)\
         .add_columns(Sequence.id, Sequence.name, Sequence.link, Vendor.name.label("vendor_name"),
                      func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
-                     func.coalesce(Sequence.price,'-').label("price"),
-                    (func.date(func.current_date(), '-2 months') <
+                     func.coalesce(Sequence.price, '-').label("price"),
+                     (func.date(func.current_date(), '-2 months') <
                      func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
-                    Sequence.first_seen) \
-            .order_by(Sequence.first_seen.desc()).limit(25)
+                     Sequence.first_seen) \
+        .order_by(Sequence.first_seen.desc()).limit(25)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
@@ -121,7 +121,7 @@ def sequence():
             .add_columns(Sequence.id, Sequence.name, Sequence.link,
                          func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
                          Vendor.name.label("vendor_name"),
-                         func.coalesce(Sequence.price,'-').label("price"),
+                         func.coalesce(Sequence.price, '-').label("price"),
                          (func.date(func.current_date(), '-2 months') <
                           func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
                          Sequence.first_seen)\
@@ -129,7 +129,6 @@ def sequence():
                         Vendor.name.ilike(looking_for),
                         Sequence.price.ilike(looking_for)))\
             .order_by(Vendor.name, Sequence.name)
-        print("SQL=", sequences)
 
         vendor_count = Vendor.query.count()
         sequence_count = Sequence.query.count()
