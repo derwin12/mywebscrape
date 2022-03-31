@@ -64,7 +64,7 @@ def index():
 
     return render_template(
         "sequence.html",
-        title="List Sequences",
+        title="25 Latest Sequences",
         sequences=sequences,
         vendor_count=vendor_count,
         sequence_count=sequence_count,

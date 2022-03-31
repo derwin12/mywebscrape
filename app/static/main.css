@@ -4,6 +4,15 @@ body {
 	margin-left: 100px;
 }
 
+th, td { white-space: nowrap; }
+    div.dataTables_wrapper {
+        margin: 0 auto;
+}
+
+div.container {
+        width: 80%;
+}
+
 p {
 	font-family: Georgia, serif;
 	font-size: 1.2em;
