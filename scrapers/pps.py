@@ -25,7 +25,6 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     sequences = []
     for product in products:
         sequence_name = product.find(class_="product-card__name").text
-        # song, artist = sequence_name.split(" - ")
         product_url = urljoin(BASEURL, product.find("a")["href"])
         p_text = product.find("div", class_="product-card__price").text
         pattern = re.compile(".*(\$[0-9]+).*")

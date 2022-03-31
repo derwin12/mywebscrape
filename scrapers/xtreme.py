@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
@@ -26,9 +27,14 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     sequences = []
     for product in products:
         sequence_name = product.find("a", class_="").text.strip()
-        # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        p = product.find("span", class_="cNexusPrice").text
+        pattern = re.compile("(\d[\d.]+)")
+        p_text = pattern.search(p)
+        if p_text:
+            price = p_text.group(1)
+        else:
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")

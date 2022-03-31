@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 
 import httpx
@@ -18,14 +19,15 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-
     products = soup.find_all("div", class_="edd_download item")
-
     sequences = []
     for product in products:
         sequence_name = product.find("a", itemprop="url").text
         product_url = product.find("a", itemprop="url")["href"]
-        sequences.append(Sequence(sequence_name, product_url))
+        price_text = product.find("span", class_="edd_price").text
+        pattern = re.compile(r'(\$\d[\d,.]*)')
+        price = pattern.search(price_text).group(1)
+        sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")
     if next_page:

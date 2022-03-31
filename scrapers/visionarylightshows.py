@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
@@ -24,7 +25,16 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     for product in products:
         sequence_name = product.find("a").text.strip()
         product_url = urljoin(url, product.find("a")["href"])
-        price = "-"
+        p = product.find("span", class_="price-item price-item--regular").text
+        pattern = r'[^0-9\.\$]+'
+        price_text = re.sub(pattern, ' ', p).strip()
+        pattern = re.compile("(\$[0-9]+).*(\$[0-9]+)")
+        try:
+            price = pattern.search(price_text)[2]
+        except:
+            price = price_text
+        if price == "$0.00":
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find("ul", "list--inline pagination").find_all("li")[-1].find("a")  # type: ignore

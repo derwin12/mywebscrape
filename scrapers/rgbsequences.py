@@ -23,7 +23,6 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     sequences = []
     for product in products:
         sequence_name = product.find(class_="woocommerce-loop-product__title").text
-        # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
         price = product.find("bdi").text
         if price == "$0.00":
