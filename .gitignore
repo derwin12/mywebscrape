@@ -1,5 +1,5 @@
 app/sequences.db
-client_secret.json
+scrapers/client_secrets.json
 
 ####################
 ### PYTHON STUFF ###
