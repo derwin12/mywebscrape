@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from urllib.parse import urljoin
+from datetime import datetime, timedelta
 
 import httpx
 from bs4 import BeautifulSoup
 
-from my_funcs import insert_sequence
+from my_funcs import insert_sequence, delete_sequence
 
 from app import BaseUrl, Vendor
 import re
