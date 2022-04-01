@@ -57,7 +57,7 @@ def index():
                      func.coalesce(Sequence.price, '-').label("price"),
                      (func.date(func.current_date(), '-2 months') <
                      func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
-                     Sequence.first_seen) \
+                     func.substr(Sequence.first_seen, 1, 10).label("first_seen")) \
         .order_by(Sequence.first_seen.desc()).limit(25)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
@@ -124,7 +124,7 @@ def sequence():
                          func.coalesce(Sequence.price, '-').label("price"),
                          (func.date(func.current_date(), '-2 months') <
                           func.coalesce(func.date(Sequence.first_seen), func.current_date())).label("is_new"),
-                         Sequence.first_seen)\
+                         func.substr(Sequence.first_seen, 1, 10).label("first_seen")) \
             .filter(or_(Sequence.name.ilike(looking_for),
                         Vendor.name.ilike(looking_for),
                         Sequence.price.ilike(looking_for)))\

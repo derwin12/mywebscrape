@@ -1,7 +1,8 @@
 import urllib.parse
 from dataclasses import dataclass
+from datetime import datetime, timedelta, date
 
-from my_funcs import insert_sequence
+from my_funcs import insert_sequence, delete_sequence
 
 import httpx
 from bs4 import BeautifulSoup
@@ -31,10 +32,9 @@ def get_products_from_page(shared_link: str) -> list[Sequence]:
         url_link = file.find("img")
         if url_link:
             if file_name.text.endswith("zip") or file_name.text.endswith("piz"):
-                sequence_name = "[_NEW] " + file_name.text
+                sequence_name = "[_NEW] " + file_name.text.split(".")[0]
                 product_url = SHARED_LINK + "&" + \
-                    urllib.parse.quote(file_name.text)
-
+                    urllib.parse.quote(file_name.text.split(".")[0])
                 price = "Free"
                 sequences.append(Sequence(sequence_name, product_url, price))
 
@@ -47,6 +47,9 @@ def main() -> None:
 
     for product in products:
         insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+
+    if products:
+        delete_sequence(store=storename, name = '[_NEW]', last_upd=(datetime.now() - timedelta(days=14)))
 
 
 if __name__ == "__main__":
