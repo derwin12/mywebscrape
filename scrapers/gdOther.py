@@ -30,6 +30,7 @@ FOLDER_IDS = [
     "1s79C7ZNquiIEgL_A4oxPHiaipXDRlXxC",
     "14Liv1-p1CGj8hbJGEuhpceFUYkzRg0_X",
     "1HN8p8bcqkzCCfiON24gWOls_jXQyc9k5",
+    "1nLv78PHAg_dWXaD4TsM9hRUawINhHlDS", # Halloween
     "16yifVMESTYnXmGWXKyNB-dF8FO2qqEF9"  # Needs Review
 ]
 
