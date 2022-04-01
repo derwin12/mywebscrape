@@ -23,6 +23,7 @@ def main() -> None:
     og.main()
     ppd.main()
     pps.main()
+    psp.main()
     rgbsequences.main()
     sa.main()
     sd.main()
