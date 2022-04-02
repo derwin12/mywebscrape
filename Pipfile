@@ -8,6 +8,7 @@ beautifulsoup4 = "*"
 httpx = "*"
 flask = "*"
 flask-sqlalchemy = "*"
+flask-migrate = "*"
 
 [dev-packages]
 black = "*"

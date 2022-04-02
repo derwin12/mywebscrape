@@ -1,13 +1,15 @@
-import datetime
+from datetime import datetime, timedelta
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, jsonify, render_template, request
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exc, or_, func
+from sqlalchemy import DateTime, desc, exc, func, or_
 
 app = Flask(__name__, instance_relative_config=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db, render_as_batch=True)
 
 STRING_FAIL = "fail"
 STRING_SUCCESS = "success"
@@ -18,6 +20,8 @@ class Vendor(db.Model):  # type: ignore
     name = db.Column(db.String(120), unique=True, index=True, nullable=False)
     urls = db.relationship("BaseUrl", backref="vendor", lazy=True)
     sequences = db.relationship("Sequence", backref="vendor", lazy=True)
+    time_created = db.Column(DateTime(timezone=False), server_default=func.now())
+    time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
 
     def __repr__(self):
         return f"<Vendor {self.name}>"
@@ -28,6 +32,8 @@ class BaseUrl(db.Model):  # type: ignore
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     url = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
+    time_created = db.Column(DateTime(timezone=False), server_default=func.now())
+    time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
 
     def __repr__(self):
         return f"<BaseUrl {self.url}>"
@@ -41,6 +47,9 @@ class Sequence(db.Model):  # type: ignore
     last_updated = db.Column(db.String, nullable=True)
     first_seen = db.Column(db.String, nullable=True)
     price = db.Column(db.String, nullable=True)
+    time_created = db.Column(DateTime(timezone=False), server_default=func.now())
+    time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
+
     __table_args__ = (
         db.UniqueConstraint("vendor_id", "name", "link", name="sequence_seq_store_idx"),
     )
@@ -52,33 +61,17 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
-    sequences = (
-        Sequence.query.join(Vendor)
-        .add_columns(
-            Sequence.id,
-            Sequence.name,
-            Sequence.link,
-            Vendor.name.label("vendor_name"),
-            func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
-            func.coalesce(Sequence.price, "-").label("price"),
-            (
-                func.date(func.current_date(), "-2 months")
-                < func.coalesce(func.date(Sequence.first_seen), func.current_date())
-            ).label("is_new"),
-            func.substr(Sequence.first_seen, 1, 10).label("first_seen"),
-        )
-        .order_by(Sequence.first_seen.desc())
-        .limit(25)
-    )
+    newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_updated)).limit(25)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
     return render_template(
         "sequence.html",
         title="25 Latest Sequences",
-        sequences=sequences,
+        sequences=newest_25_sequences,
         vendor_count=vendor_count,
         sequence_count=sequence_count,
+        today=datetime.now()
     )
 
 
@@ -126,46 +119,19 @@ def register_url():
 @app.route("/search", methods=["GET", "POST"])
 def sequence():
     if request.method == "POST":
-        ss = request.form["search_string"]
-
-        looking_for = "%{0}%".format(ss)
-        weeksago = datetime.timedelta(weeks=6)
-        print(weeksago)
-
-        sequences = (
-            Sequence.query.join(Vendor)
-            .add_columns(
-                Sequence.id,
-                Sequence.name,
-                Sequence.link,
-                func.substr(Sequence.last_updated, 1, 10).label("last_updated"),
-                Vendor.name.label("vendor_name"),
-                func.coalesce(Sequence.price, "-").label("price"),
-                (
-                    func.date(func.current_date(), "-2 months")
-                    < func.coalesce(func.date(Sequence.first_seen), func.current_date())
-                ).label("is_new"),
-                func.substr(Sequence.first_seen, 1, 10).label("first_seen"),
-            )
-            .filter(
-                or_(
-                    Sequence.name.ilike(looking_for),
-                    Vendor.name.ilike(looking_for),
-                    Sequence.price.ilike(looking_for),
-                )
-            )
-            .order_by(Vendor.name, Sequence.name)
-        )
-
+        search_string = request.form["search_string"]
+        sequence_search_result = Sequence.query.filter(Sequence.name.contains(search_string))
         vendor_count = Vendor.query.count()
         sequence_count = Sequence.query.count()
 
         return render_template(
             "sequence.html",
-            title=f"Sequence Search ( {request.form['search_string']} )",
-            sequences=sequences,
+            title=f"Sequence Search ({ search_string })",
+            sequences=sequence_search_result,
             vendor_count=vendor_count,
             sequence_count=sequence_count,
+            today=datetime.now()
+
         )
 
     return render_template("sequence.html", title="Find A Sequence")
