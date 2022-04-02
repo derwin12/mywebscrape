@@ -44,8 +44,6 @@ class Sequence(db.Model):  # type: ignore
     name = db.Column(db.String, nullable=False, index=True)
     link = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
-    last_updated = db.Column(db.String, nullable=True)
-    first_seen = db.Column(db.String, nullable=True)
     price = db.Column(db.String, nullable=True)
     time_created = db.Column(DateTime(timezone=False), server_default=func.now())
     time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
