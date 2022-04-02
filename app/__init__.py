@@ -162,7 +162,7 @@ def sequence():
 
         return render_template(
             "sequence.html",
-            title="Sequence Search (" + request.form["search_string"] + ")",
+            title=f"Sequence Search ( {request.form['search_string']} )",
             sequences=sequences,
             vendor_count=vendor_count,
             sequence_count=sequence_count,
