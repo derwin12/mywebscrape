@@ -56,7 +56,7 @@ $(document).ready(function() {
                 <td style="text-align:center">{{ sequence.vendor.name }}</td>
                 <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
                 <td style="text-align:center">{{ sequence.price }}</td>
-                <td style="text-align:center">{{ sequence.time_created }}</td>
+                <td style="text-align:center">{{ sequence.time_created.date() }}</td>
             </tr>
         {% endfor %}
         </table>
