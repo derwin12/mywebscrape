@@ -48,7 +48,7 @@ $(document).ready(function() {
             </thead>
         {% for sequence in sequences %}
             <tr>
-            {% if (today - sequence.time_updated).days < 30 %}
+            {% if (today - sequence.time_created).days < 30 %}
                 <td style="text-align:center"><img src='/static/new.gif' width="25" height="18"></td>
             {% else %}
                 <td>&nbsp;</td>
@@ -56,7 +56,7 @@ $(document).ready(function() {
                 <td style="text-align:center">{{ sequence.vendor.name }}</td>
                 <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
                 <td style="text-align:center">{{ sequence.price }}</td>
-                <td style="text-align:center">{{ sequence.time_updated }}</td>
+                <td style="text-align:center">{{ sequence.time_created }}</td>
             </tr>
         {% endfor %}
         </table>

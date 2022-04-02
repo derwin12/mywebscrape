@@ -59,7 +59,7 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
-    newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_updated)).limit(25)
+    newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(25)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
