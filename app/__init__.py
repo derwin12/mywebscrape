@@ -118,7 +118,9 @@ def register_url():
 def sequence():
     if request.method == "POST":
         search_string = request.form["search_string"]
-        sequence_search_result = Sequence.query.filter(Sequence.name.contains(search_string))
+        sequence_search_result = Sequence.query.join(Vendor)\
+            .filter(or_(Sequence.name.contains(search_string),
+                        Vendor.name.contains(search_string)))
         vendor_count = Vendor.query.count()
         sequence_count = Sequence.query.count()
 

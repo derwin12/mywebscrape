@@ -2,7 +2,6 @@ import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
-import httpx
 from bs4 import BeautifulSoup
 
 from my_funcs import insert_sequence
@@ -26,7 +25,6 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         s = product.find(class_="edd_download_title").text
         pattern = r'[^A-Za-z0-9\-\'\.()&]+'
         sequence_name = re.sub(pattern, ' ', s).strip()
-        # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
         if product.find("div", class_="edd_price_options"):
             p_text = product.find("div", class_="edd_price_options")

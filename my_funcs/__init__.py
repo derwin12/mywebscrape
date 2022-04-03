@@ -23,7 +23,7 @@ def delete_sequence(store, name, last_upd):
 
 def insert_sequence(store, url, name, price='-'):
     vendor = Vendor.query.filter(Vendor.name == store).first()
-    sequence = Sequence(name=name, link=url, vendor_id=vendor.id, last_updated=datetime.now(), price=price)
+    sequence = Sequence(name=name, link=url, vendor_id=vendor.id, time_updated=datetime.now(), price=price)
     print("Adding %s [%s]" % (sequence.name, price))
     seq = Sequence.query.filter(Sequence.link == url and Sequence.vendor_id == vendor.id).first()
     if seq:
@@ -31,9 +31,9 @@ def insert_sequence(store, url, name, price='-'):
     else:
         seq = Sequence.query.filter(Sequence.name == name and Sequence.vendor_id == vendor.id).first()
         Sequence.query.filter(Sequence.name == name and Sequence.vendor_id == vendor.id).delete()
-    if seq and seq.first_seen:
-        sequence.first_seen = seq.first_seen
+    if seq and seq.time_created:
+        sequence.time_created = seq.time_created
     else:
-        sequence.first_seen = datetime.now()
+        sequence.time_created = datetime.now()
     db.session.add(sequence)
     db.session.commit()
