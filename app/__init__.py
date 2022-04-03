@@ -19,7 +19,7 @@ class Vendor(db.Model):  # type: ignore
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(120), unique=True, index=True, nullable=False)
     urls = db.relationship("BaseUrl", backref="vendor", lazy=True)
-    sequences = db.relationship("Sequence", backref="vendor", lazy=True)
+    sequences = db.relationship("Sequence", backref="vendor", lazy="joined")
     time_created = db.Column(DateTime(timezone=False), server_default=func.now())
     time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
 
@@ -118,7 +118,7 @@ def register_url():
 def sequence():
     if request.method == "POST":
         search_string = request.form["search_string"]
-        sequence_search_result = Sequence.query.filter(Sequence.name.contains(search_string))
+        sequence_search_result = Sequence.query.join(Vendor.sequences).filter(Sequence.name.contains(search_string) | (Vendor.name.contains(search_string)))
         vendor_count = Vendor.query.count()
         sequence_count = Sequence.query.count()
 
