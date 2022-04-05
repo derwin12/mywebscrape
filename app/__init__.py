@@ -1,11 +1,16 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+import os
 
 from flask import Flask, jsonify, render_template, request
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime, desc, exc, func, or_
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
 app = Flask(__name__, instance_relative_config=True)
+auth = HTTPBasicAuth()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -13,6 +18,13 @@ migrate = Migrate(app, db, render_as_batch=True)
 
 STRING_FAIL = "fail"
 STRING_SUCCESS = "success"
+
+load_dotenv()  # take environment variables from .env.
+PASSWORD = os.getenv("PASSWORD", "Missing admin password")
+
+users = {
+    "admin": generate_password_hash(PASSWORD),
+}
 
 
 class Vendor(db.Model):  # type: ignore
@@ -74,12 +86,14 @@ def index():
 
 
 @app.route("/vendors")
+@auth.login_required
 def vendors():
     v = Vendor.query.all()
     return render_template("vendors.html", vendors=v)
 
 
 @app.route("/register-vendor", methods=["POST"])
+@auth.login_required
 def register_vendor():
     form = request.form
     vendor = Vendor(name=form["name"])
@@ -93,6 +107,7 @@ def register_vendor():
 
 
 @app.route("/register-url", methods=["GET", "POST"])
+@auth.login_required
 def register_url():
     if request.method == "POST":
         form = request.form
@@ -135,6 +150,13 @@ def sequence():
         )
 
     return render_template("sequence.html", title="Find A Sequence")
+
+
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and \
+            check_password_hash(users.get(username), password):
+        return username
 
 
 app.config.from_object("config")

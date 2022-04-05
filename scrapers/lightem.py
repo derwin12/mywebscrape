@@ -52,12 +52,16 @@ def main() -> None:
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
         print(f"Loading %s" % baseurl[0].url)
-        response = httpx.get(baseurl[0].url, timeout=15)
-        soup = BeautifulSoup(response.text, "html.parser")
-        products = get_products_from_page(soup, baseurl[0].url)
+        try:
+            response = httpx.get(baseurl[0].url, timeout=15)
+            soup = BeautifulSoup(response.text, "html.parser")
+            products = get_products_from_page(soup, baseurl[0].url)
 
-        for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+            for product in products:
+                insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+        except:
+            print("Unable to load %s" % storename)
+            pass
 
 
 if __name__ == "__main__":
