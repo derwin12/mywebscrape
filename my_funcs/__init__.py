@@ -12,13 +12,13 @@ def delete_sequence(store, name, last_upd):
         vendorid = vendor.id
         row_cnt = Sequence.query.filter(and_(Sequence.vendor_id == vendorid,
                                              Sequence.name.ilike(looking_for_name),
-                                             Sequence.last_updated < last_upd)).count()
+                                             Sequence.time_updated < last_upd)).count()
         print("Deleting %s rows from %s where name like %s and last_update is prior to %s"
               % (row_cnt, store, name, last_upd))
         if row_cnt > 0:
             Sequence.query.filter(and_(Sequence.vendor_id == vendorid,
-                           Sequence.name.ilike(looking_for_name),
-                           Sequence.last_updated < last_upd)).delete(synchronize_session='fetch')
+                                       Sequence.name.ilike(looking_for_name),
+                                       Sequence.time_updated < last_upd)).delete(synchronize_session='fetch')
 
 
 def insert_sequence(store, url, name, price='-'):

@@ -22,7 +22,7 @@ resource = {
 def main():
 
     res = getfilelist.GetFileList(resource)  # or r = getfilelist.GetFolderTree(resource)
-
+# TODO Fetch all the rows...
     for key, value in res.items():
         if key == 'fileList':
             for a in sorted(value[0]["files"], key=lambda x: x["name"]):

@@ -21,14 +21,14 @@ class Sequence:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-    products = soup.find_all("div", class_="js-merch-stash-check-listing")
+    products = soup.find_all("div", class_="grid-product")
     sequences = []
     for product in products:
-        s = product.find("h3").text.strip()
+        s = product.find("div", class_="grid-product__title-inner").text.strip()
         pattern = r'[^A-Za-z0-9\-\'\.()&]+'
         sequence_name = re.sub(pattern, ' ', s).strip()
-        product_url = urljoin(url, product.find("a")["href"])
-        price_text = product.find("p", class_="wt-pr-xs-1 wt-text-title-01").text
+        product_url = urljoin(url, product.find("div", class_="grid-product__title-inner").text)
+        price_text = product.find("div", class_="grid-product__price-amount").text
         pattern = re.compile(r'(\$\d[\d,.]*)')
         price = pattern.search(price_text).group(1)
         sequences.append(Sequence(sequence_name, product_url, price))
