@@ -24,10 +24,26 @@ $(document).ready(function() {
 
 <body>
 <center><h1>{{title}}</h1></center>
-    <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:400px">
-        <input name="search_string" type="text" placeholder="Search by store or sequence" value="{{request.form.sequence}}">
-        <button type="submit"><i class="fa fa-search"></i>
-        </button>
+    <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:900px">
+        <table align="center">
+            <td>
+                <label for="vendors">Vendor or All:</label>
+            </td>
+            <td>
+                <select name="vendors" id="vendors" class="dropdown">
+                <option value="All">All</option>
+                {% for vendor in vendors %}
+                    <option value="{{ vendor.name }}">{{ vendor.name }}</option>
+                {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input name="search_string" type="text" placeholder="Search by store or sequence" value="{{request.form.sequence}}">
+            </td>
+            <td>
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </td>
+        </table>
     </form>
     <p></p>
     <center><table><tr><td class="small">Vendor Count: {{ vendor_count }}</td>

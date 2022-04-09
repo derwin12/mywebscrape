@@ -43,24 +43,34 @@ th {
 	color: FireBrick;
 }
 
+label {
+	font-family: Georgia, serif;
+	font-size: 1.2em;
+	color: DarkSlateGray;
+}
+
+select.dropdown {
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid grey;
+  background: #f1f1f1;
+}
+
 form.search input[type=text] {
   padding: 10px;
-  font-size: 17px;
+  font-size: 15px;
   border: 1px solid grey;
-  float: left;
-  width: 80%;
+  width: 200px;
   background: #f1f1f1;
 }
 
 form.search button {
-  float: left;
-  width: 14%;
   padding: 10px;
+  align: left;
   background: #2196F3;
   color: white;
-  font-size: 17px;
+  font-size: 15px;
   border: 1px solid grey;
-  border-left: none;
   cursor: pointer;
 }
 

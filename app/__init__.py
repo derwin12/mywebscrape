@@ -4,7 +4,7 @@ import os
 from flask import Flask, jsonify, render_template, request
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, desc, exc, func, or_
+from sqlalchemy import DateTime, desc, exc, func, or_, and_
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -72,6 +72,7 @@ class Sequence(db.Model):  # type: ignore
 @app.route("/")
 def index():
     newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(25)
+    all_vendors = Vendor.query.order_by(Vendor.name).all()
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
@@ -81,7 +82,8 @@ def index():
         sequences=newest_25_sequences,
         vendor_count=vendor_count,
         sequence_count=sequence_count,
-        today=datetime.now()
+        today=datetime.now(),
+        vendors=all_vendors
     )
 
 
@@ -133,9 +135,17 @@ def register_url():
 def sequence():
     if request.method == "POST":
         search_string = request.form["search_string"]
-        sequence_search_result = Sequence.query.join(Vendor)\
-            .filter(or_(Sequence.name.contains(search_string),
-                        Vendor.name.contains(search_string)))
+        search_vendor = request.form["vendors"]
+        print(search_vendor, search_string)
+        all_vendors = Vendor.query.order_by(Vendor.name).all()
+        if search_vendor == 'All':
+            sequence_search_result = Sequence.query.join(Vendor)\
+                .filter(or_(Sequence.name.contains(search_string),
+                            Vendor.name.contains(search_string))).limit(300)
+        else:
+            sequence_search_result = Sequence.query.join(Vendor)\
+                .filter(and_(Sequence.name.contains(search_string),
+                             Vendor.name.contains(search_vendor)))
         vendor_count = Vendor.query.count()
         sequence_count = Sequence.query.count()
 
@@ -145,7 +155,8 @@ def sequence():
             sequences=sequence_search_result,
             vendor_count=vendor_count,
             sequence_count=sequence_count,
-            today=datetime.now()
+            today=datetime.now(),
+            vendors=all_vendors
 
         )
 
