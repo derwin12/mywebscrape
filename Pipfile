@@ -9,6 +9,8 @@ httpx = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
+flask-httpauth = "*"
+python-dotenv = "*"
 
 [dev-packages]
 black = "*"
