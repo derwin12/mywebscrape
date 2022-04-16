@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from urllib.parse import urljoin
 
 import httpx
 from app import BaseUrl, Vendor
@@ -33,7 +32,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     sequences = []
     for product in products:
         sequence_name = product.text.replace("*", "").strip()
-        product_url = urljoin(url, product.find("a")["href"])
+        product_url = product.find("a")["href"]
 
         if "ogsequences" not in product_url:
             seq_num = re.search(".*p=(\d+).*", product_url).group(1)  # type: ignore
