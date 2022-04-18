@@ -43,7 +43,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     if next_page:
         next_page_url = urljoin(url, next_page["href"])  # type: ignore
         print(f"Loading %s" % (next_page_url))
-        response = httpx.get(next_page_url)
+        response = httpx.get(next_page_url, timeout=15)
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(next_soup, url))
 
@@ -56,7 +56,7 @@ def main() -> None:
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
         print(f"Loading %s" % baseurl[0].url)
-        response = httpx.get(baseurl[0].url)
+        response = httpx.get(baseurl[0].url, timeout=15)
         soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, baseurl[0].url)
 

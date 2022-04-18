@@ -16,7 +16,7 @@ def main() -> None:
     led.main()
     lightem.main()
     livermore.main()
-   # ll.main()
+    ll.main()
     lotn.main()
     magical.main()
     mwm.main()
