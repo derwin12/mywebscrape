@@ -106,7 +106,7 @@ def register_vendor():
         return "Error"
 
 
-@app.route("/register-url", methods=["GET", "POST"])
+@app.route("/urls", methods=["GET", "POST"])
 @auth.login_required
 def register_url():
     if request.method == "POST":
