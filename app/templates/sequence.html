@@ -47,22 +47,13 @@
             </tr>
         {% endfor %}
     </table>
-</div>
 
-$('#table').bootstrapTable({
-  url: 'data1.json',
-  pagination: true,
-  search: true,
-  columns: [{
-    field: 'id',
-    title: 'Item ID'
-  }, {
-    field: 'name',
-    title: 'Item Name'
-  }, {
-    field: 'price',
-    title: 'Item Price'
-  }]
-})
+
+</div>
+<script>
+    $(document).ready( function () {
+        $('#table_id').DataTable();
+    } );
+</script>
 
 {% endblock content %}
