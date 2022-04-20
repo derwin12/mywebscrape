@@ -1,65 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-    <link rel="stylesheet" href="static/main.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+{% extends 'layouts.html' %}
 
-    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" class="init">
 
-$(document).ready(function() {
-    $('#data').DataTable( {
-        "order": [[ 2, "asc" ]],
-        "pageLength": 10
-    } );
-} );
 
-	</script>
-</head>
+{% block content %}
 
-<body>
-<center><h1>{{title}}</h1></center>
-    <form class="search" action="{{url_for('sequence')}}" method="post" style="margin:auto;max-width:400px">
-        <input name="search_string" type="text" placeholder="Search by store or sequence" value="{{request.form.sequence}}">
-        <button type="submit"><i class="fa fa-search"></i>
-        </button>
-    </form>
-    <p></p>
-    <center><table><tr><td class="small">Vendor Count: {{ vendor_count }}</td>
-        <td>&nbsp;</td>
-        <td class="small">Sequence Count: {{ sequence_count }}</td></tr></table>
-    </center>
-
-    <div id="results">
-        <table id="data" class="stripe row-border order-column" style="width:100%">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Store Name</th>
-                <th>Sequence</th>
-                <th>Price</th>
-                <th>First Seen</th>
-            </tr>
-            </thead>
+<div class="container">
+    <div class="container text-center">
+        <div class="card-body">
+            <h2 class="card-title">Welcome to the Sequence Index</h2>
+            <p class="card-text">We will help you find the sequence you are looking for.  You can search by entering the sequence or vendor name</p>
+            <p class="card-text">Vendor Count: {{ vendor_count }} -- Sequence Count: {{ sequence_count }}</p>
+        </div>
+    </div>
+    <div class="container text-center col-3">
+        <form class="search" action="{{url_for('sequence')}}" method="post">
+            <input class="form-control me-2" name="search_string" type="text" placeholder="Search by store or sequence" value="{{request.form.sequence}}">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
+    <div class="container text-center">
+        <div class="card-body">
+            <h2 class="card-title">{{ title }}</h2>
+        </div>
+    </div>
+    <table class="table table-striped" id="data">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Store Name</th>
+            <th>Sequence</th>
+            <th>Price</th>
+            <th>First Seen</th>
+        </tr>
+        </thead>
         {% for sequence in sequences %}
             <tr>
             {% if (today - sequence.time_created).days < 30 %}
-                <td style="text-align:center"><img src='/static/new.gif' width="25" height="18"></td>
+                <td><img src='/static/new.gif' width="25" height="18"></td>
             {% else %}
                 <td>&nbsp;</td>
             {% endif %}
-                <td style="text-align:center">{{ sequence.vendor.name }}</td>
+                <td>{{ sequence.vendor.name }}</td>
                 <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
-                <td style="text-align:center">{{ sequence.price }}</td>
-                <td style="text-align:center">{{ sequence.time_created.date() }}</td>
+                <td>{{ sequence.price }}</td>
+                <td>{{ sequence.time_created.date() }}</td>
             </tr>
         {% endfor %}
-        </table>
-    </div>
-</body>
-</html>
+    </table>
+
+
+</div>
+
+
+{% endblock content %}
