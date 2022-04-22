@@ -29,16 +29,17 @@ def main() -> None:
     sa.main()
     sd.main()
     sequence_solutions.main()
+    sequence_outlet.main()
     showtime.main()
     sl.main()
     ss.main()
+    sol_sequences.main()
     ssequence.main()
     visionarylightshows.main()
     vivid_sequences.main()
     wls.main()
     xl.main()
     xtreme.main()
-    ss.main()
     print("Scraping complete.")
 
 
