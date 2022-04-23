@@ -1,13 +1,13 @@
-from datetime import datetime
 import os
+from datetime import datetime
 
-from flask import Flask, jsonify, render_template, request
+from dotenv import load_dotenv
+from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime, desc, exc, func, or_
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
-from dotenv import load_dotenv
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__, instance_relative_config=True)
 auth = HTTPBasicAuth()
@@ -81,7 +81,7 @@ def index():
         sequences=newest_25_sequences,
         vendor_count=vendor_count,
         sequence_count=sequence_count,
-        today=datetime.now()
+        today=datetime.now(),
     )
 
 
@@ -131,31 +131,52 @@ def register_url():
 
 @app.route("/search", methods=["GET", "POST"])
 def sequence():
-    if request.method == "POST":
-        search_string = request.form["search_string"]
-        sequence_search_result = Sequence.query.join(Vendor)\
-            .filter(or_(Sequence.name.contains(search_string),
-                        Vendor.name.contains(search_string)))
-        vendor_count = Vendor.query.count()
-        sequence_count = Sequence.query.count()
+    if request.method == "GET":
+        return redirect(url_for("index"))
 
-        return render_template(
-            "sequence.html",
-            title=f"Sequence Search ({ search_string })",
-            sequences=sequence_search_result,
-            vendor_count=vendor_count,
-            sequence_count=sequence_count,
-            today=datetime.now()
+    search_string = request.form["search_string"]
+    sequence_search_result = Sequence.query.join(Vendor).filter(
+        or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
+    )
+    vendor_count = Vendor.query.count()
+    sequence_count = Sequence.query.count()
 
-        )
+    return render_template(
+        "sequence.html",
+        title=f"Sequence Search ({ search_string })",
+        sequences=sequence_search_result,
+        vendor_count=vendor_count,
+        sequence_count=sequence_count,
+        today=datetime.now(),
+    )
 
-    return render_template("sequence.html", title="Find A Sequence")
+
+@app.route("/vendor-list", methods=["GET"])
+def vendor_list():
+
+    vendors = Vendor.query.order_by(Vendor.name).all()
+
+    # This extra logic is needed because some vendors don't have urls in the database.
+    vendor_list = []
+    for vendor in vendors:
+        try:
+            url = vendor.urls[0].url
+        except IndexError:
+            url = ""
+
+        name = vendor.name
+        vendor_list.append({"name": name, "url": url})
+
+    return render_template(
+        "vendor_list.html",
+        title=f"Vendor List",
+        vendors=vendor_list,
+    )
 
 
 @auth.verify_password
 def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username), password):
+    if username in users and check_password_hash(users.get(username, ""), password):
         return username
 
 

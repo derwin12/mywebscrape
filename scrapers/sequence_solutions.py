@@ -1,55 +1,55 @@
-import re
-from dataclasses import dataclass
-
 import httpx
+from app import Sequence, Vendor
 from bs4 import BeautifulSoup
+from my_funcs import create_or_update_sequence
 
-from my_funcs import insert_sequence
-
-from app import BaseUrl, Vendor
-
-storename = 'SequenceSol'
+storename = "Sequence Solutions"
 
 
-@dataclass
-class Sequence:
-    name: str
-    url: str
-    price: str
-
-
-def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+def get_products_from_page(
+    soup: BeautifulSoup, link: str, vendor: Vendor
+) -> list[Sequence]:
     products = soup.find_all("div", class_="edd_download item")
     sequences = []
     for product in products:
         sequence_name = product.find("a", itemprop="url").text
         product_url = product.find("a", itemprop="url")["href"]
-        price_text = product.find("span", class_="edd_price").text
-        pattern = re.compile(r'(\$\d[\d,.]*)')
-        price = pattern.search(price_text).group(1)
-        sequences.append(Sequence(sequence_name, product_url, price))
+        price = product.find("span", class_="edd_price").text
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
 
     next_page = soup.find(class_="next")
     if next_page:
         response = httpx.get(next_page["href"])  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(next_soup, url))
+        sequences.extend(
+            get_products_from_page(soup=next_soup, link=link, vendor=vendor)
+        )
 
     return sequences
 
 
 def main() -> None:
     print(f"Loading %s" % storename)
-    baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
-        .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
-    for baseurl in baseurls:
-        print(f"Loading %s" % baseurl[0].url)
-        response = httpx.get(baseurl[0].url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        products = get_products_from_page(soup, baseurl[0].url)
 
-        for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+    vendor = Vendor.query.filter_by(name=storename).all()
+    if not vendor:
+        raise Exception(f"{storename} not found in database.")
+    elif len(vendor) > 1:
+        raise Exception(f"{storename} found multiple times in database.")
+
+    vendor = vendor[0]
+    baseurls = vendor.urls
+    for baseurl in baseurls:
+        print(f"Loading %s" % baseurl.url)
+        response = httpx.get(baseurl.url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        sequences = get_products_from_page(soup=soup, link=baseurl.url, vendor=vendor)
+
+        create_or_update_sequence(sequences)
 
 
 if __name__ == "__main__":
