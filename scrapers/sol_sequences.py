@@ -8,7 +8,7 @@ from my_funcs import insert_sequence
 
 from app import Vendor
 
-storename = "Sol Sequences"
+storename = "Spectacle of Light Sequences"
 
 
 @dataclass
