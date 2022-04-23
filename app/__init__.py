@@ -150,7 +150,28 @@ def sequence():
         today=datetime.now(),
     )
 
-    return render_template("sequence.html", title="Find A Sequence")
+
+@app.route("/vendor-list", methods=["GET"])
+def vendor_list():
+
+    vendors = Vendor.query.order_by(Vendor.name).all()
+
+    vendor_list = []
+    for vendor in vendors:
+        try:
+            url = vendor.urls[0].url
+        except IndexError:
+            url = ""
+
+        name = vendor.name
+        vendor_list.append({"name": name, "url": url})
+    # vendor_list = [{"name": v.name, "url": v.urls[0].url} for v in vendors]
+
+    return render_template(
+        "vendor_list.html",
+        title=f"Vendor List",
+        vendors=vendor_list,
+    )
 
 
 @auth.verify_password
