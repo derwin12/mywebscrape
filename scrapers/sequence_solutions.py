@@ -1,34 +1,35 @@
 from dataclasses import dataclass
 
 import httpx
-from app import BaseUrl, Vendor
+from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import insert_sequence
+from my_funcs import create_or_update_product
 
 storename = "Sequence Solutions"
 
 
-@dataclass
-class Sequence:
-    name: str
-    url: str
-    price: str
-
-
-def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+def get_products_from_page(
+    soup: BeautifulSoup, link: str, vendor: Vendor
+) -> list[Sequence]:
     products = soup.find_all("div", class_="edd_download item")
     sequences = []
     for product in products:
         sequence_name = product.find("a", itemprop="url").text
         product_url = product.find("a", itemprop="url")["href"]
         price = product.find("span", class_="edd_price").text
-        sequences.append(Sequence(sequence_name, product_url, price))
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
 
     next_page = soup.find(class_="next")
     if next_page:
         response = httpx.get(next_page["href"])  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(next_soup, url))
+        sequences.extend(
+            get_products_from_page(soup=next_soup, link=link, vendor=vendor)
+        )
 
     return sequences
 
@@ -42,17 +43,15 @@ def main() -> None:
     elif len(vendor) > 1:
         raise Exception(f"{storename} found multiple times in database.")
 
-    baseurls = vendor[0].urls
+    vendor = vendor[0]
+    baseurls = vendor.urls
     for baseurl in baseurls:
         print(f"Loading %s" % baseurl.url)
         response = httpx.get(baseurl.url)
         soup = BeautifulSoup(response.text, "html.parser")
-        products = get_products_from_page(soup, baseurl.url)
+        sequences = get_products_from_page(soup=soup, link=baseurl.url, vendor=vendor)
 
-        for product in products:
-            insert_sequence(
-                store=storename, url=product.url, name=product.name, price=product.price
-            )
+        create_or_update_product(sequences)
 
 
 if __name__ == "__main__":
