@@ -16,7 +16,7 @@ Open localhost:5000 from browser
 
 
 Install in Pi Notes:
- 
+``` 
  sudo apt install zsh fzf curl tmux git neovim automake autoconf libreadline-dev libncurses-dev libssl-dev \
        libyaml-dev libxslt-dev libffi-dev libtool unixodbc-dev libbz2-dev libsqlite3-dev build-essential    zlib1g-dev
  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.1
@@ -32,3 +32,4 @@ Install in Pi Notes:
  
  CRONJOB
    5 15 * * * cd /home/pi/mywebscrape; sh -x ./runit.sh > /tmp/logit
+```
