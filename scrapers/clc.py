@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from urllib.parse import urljoin
 import re
+import os
 
 from bs4 import BeautifulSoup
 
@@ -8,14 +9,18 @@ from my_funcs import insert_sequence
 
 from app import BaseUrl, Vendor
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 
-from chromedriver_py import binary_path
-import selenium.webdriver.chrome.service as Service
-
+if os.name != "posix":
+    from chromedriver_py import binary_path
+    import selenium.webdriver.chrome.service as Service
+else:
+    from selenium.webdriver.chrome.service import Service
 
 storename = 'Custom Light Creations'
 lastval = ""
@@ -62,12 +67,19 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         next_page = soup.find(attrs={"data-aid": "PAGINATION_ARROW_FORWARD"})
 
         if next_page:
-            service_object = Service.Service(binary_path)
             print(f"Loading %s" % (urljoin(url, next_page["href"])))
-            driver = webdriver.Chrome(service=service_object)
+            if os.name != "posix":
+                service_object = Service.Service(binary_path)
+                driver = webdriver.Chrome(service=service_object)
+            else:
+                options = Options()
+                options.add_argument('--headless')
+                options.add_argument('--no-sandbox')
+                options.add_argument('--disable-dev-shm-usage')
+                driver = webdriver.Chrome(service=Service('/usr/bin/chromedriver'), options=options)
             driver.get(urljoin(url, next_page["href"]))
             try:
-                WebDriverWait(driver, 10).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
+                WebDriverWait(driver, 20).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
             except TimeoutException:
                 print("Unable to load")
                 raise
@@ -89,8 +101,16 @@ def main() -> None:
         .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
     for baseurl in baseurls:
         print(f"Loading %s" % baseurl[0].url)
-        service_object = Service.Service(binary_path)
-        driver = webdriver.Chrome(service=service_object)
+        if os.name != "posix":
+            service_object = Service.Service(binary_path)
+            driver = webdriver.Chrome(service=service_object)
+        else:
+            options = Options()
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            driver = webdriver.Chrome(service=Service('/usr/bin/chromedriver'), options=options)
+
         driver.get(baseurl[0].url)
         try:
             WebDriverWait(driver, 10).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
