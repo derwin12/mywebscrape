@@ -156,6 +156,7 @@ def vendor_list():
 
     vendors = Vendor.query.order_by(Vendor.name).all()
 
+    # This extra logic is needed because some vendors don't have urls in the database.
     vendor_list = []
     for vendor in vendors:
         try:
@@ -165,7 +166,6 @@ def vendor_list():
 
         name = vendor.name
         vendor_list.append({"name": name, "url": url})
-    # vendor_list = [{"name": v.name, "url": v.urls[0].url} for v in vendors]
 
     return render_template(
         "vendor_list.html",
