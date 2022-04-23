@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
