@@ -9,14 +9,8 @@
         <div class="card-body">
             <h2 class="card-title">Welcome to the Sequence Index</h2>
             <p class="card-text">We will help you find the sequence you are looking for.  You can search by entering the sequence or vendor name</p>
-            <p class="card-text">Vendor Count: {{ vendor_count }} -- Sequence Count: {{ sequence_count }}</p>
+            <p class="card-text">Vendor Count: <a href="{{ url_for('vendor_list')}}">{{ vendor_count }}</a> -- Sequence Count: {{ sequence_count }}</p>
         </div>
-    </div>
-    <div class="container text-center col-3">
-        <form class="search" action="{{url_for('sequence')}}" method="post">
-            <input class="form-control me-2" name="search_string" type="text" placeholder="Search by store or sequence" value="{{request.form.sequence}}">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
     </div>
     <div class="container text-center">
         <div class="card-body">
