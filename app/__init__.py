@@ -3,6 +3,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, render_template, request, url_for
+import logging
 from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +11,8 @@ from sqlalchemy import DateTime, desc, exc, func, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__, instance_relative_config=True)
+logging.basicConfig(filename='app.log', level=logging.WARN, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+
 auth = HTTPBasicAuth()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -71,6 +74,7 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
+    app.logger.info('Top 25')
     newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(25)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
@@ -97,6 +101,7 @@ def vendors():
 def register_vendor():
     form = request.form
     vendor = Vendor(name=form["name"])
+    app.logger.info('Adding vendor: {%s}', vendor)
     db.session.add(vendor)
     try:
         session_commit()
@@ -135,6 +140,7 @@ def sequence():
         return redirect(url_for("index"))
 
     search_string = request.form["search_string"]
+    app.logger.info('Search: {%s}', search_string)
     sequence_search_result = Sequence.query.join(Vendor).filter(
         or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
     )
@@ -153,7 +159,7 @@ def sequence():
 
 @app.route("/vendor-list", methods=["GET"])
 def vendor_list():
-
+    app.logger.info('Vendor List')
     vendors = Vendor.query.order_by(Vendor.name).all()
 
     # This extra logic is needed because some vendors don't have urls in the database.
