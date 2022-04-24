@@ -30,8 +30,15 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url,
                               product.find("div",
-                                     class_="structItem-title").find("a", attrs={"data-tp-primary": "on"})["href"])
-        price = "Free"
+                                           class_="structItem-title")
+                              .find("a", attrs={"data-tp-primary": "on"})["href"])
+        price_text = product.find("span", class_="label--primary")
+        if price_text:
+            price = price_text.text
+        else:
+            price = "Free"
+        if price == "0.00":
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="pageNav-jump pageNav-jump--next")
