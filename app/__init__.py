@@ -116,8 +116,7 @@ def register_url():
             db.session.add(baseurl)
             session_commit()
             return f"{baseurl.url} successfully created."
-        else:
-            return "Missing values."
+        else:            return "Missing values."
     else:
         v = Vendor.query.order_by(Vendor.name)
         u = (
