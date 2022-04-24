@@ -1,8 +1,10 @@
 from scrapers import *
+import os
 
 
 def main() -> None:
-    ai.main()
+    if os.name != "posix":
+        ai.main()
     blinky.main()
     bostik.main()
     cfol.main()

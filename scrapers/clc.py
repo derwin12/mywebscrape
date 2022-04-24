@@ -79,10 +79,10 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
                 driver = webdriver.Chrome(service=Service('/usr/bin/chromedriver'), options=options)
             driver.get(urljoin(url, next_page["href"]))
             try:
-                WebDriverWait(driver, 10).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
+                WebDriverWait(driver, 20).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
             except TimeoutException:
                 print("Unable to load")
-                raise
+                pass
             html = driver.page_source
             driver.close()
             next_soup = BeautifulSoup(html, "html.parser")
@@ -113,10 +113,10 @@ def main() -> None:
 
         driver.get(baseurl[0].url)
         try:
-            WebDriverWait(driver, 15).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
+            WebDriverWait(driver, 20).until(expected_conditions.element_to_be_clickable((By.LINK_TEXT, "1")))
         except TimeoutException:
             print("Unable to load")
-            raise
+            pass
         html = driver.page_source
         driver.close()
         soup = BeautifulSoup(html, "html.parser")
