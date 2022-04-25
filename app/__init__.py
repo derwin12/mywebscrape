@@ -1,9 +1,9 @@
+import logging
 import os
 from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, render_template, request, url_for
-import logging
 from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +11,11 @@ from sqlalchemy import DateTime, desc, exc, func, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__, instance_relative_config=True)
-logging.basicConfig(filename='app.log', level=logging.WARN, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+logging.basicConfig(
+    filename="app.log",
+    level=logging.WARN,
+    format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s",
+)
 
 auth = HTTPBasicAuth()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
@@ -74,7 +78,7 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
-    app.logger.info('Top 25')
+    app.logger.info("Top 25")
     newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(25)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
@@ -82,7 +86,7 @@ def index():
     return render_template(
         "sequence.html",
         title="25 Latest Sequences",
-        sequences=newest_25_sequences,
+        sequences=[normalize_price(x) for x in newest_25_sequences],
         vendor_count=vendor_count,
         sequence_count=sequence_count,
         today=datetime.now(),
@@ -101,7 +105,7 @@ def vendors():
 def register_vendor():
     form = request.form
     vendor = Vendor(name=form["name"])
-    app.logger.info('Adding vendor: {%s}', vendor)
+    app.logger.info("Adding vendor: {%s}", vendor)
     db.session.add(vendor)
     try:
         session_commit()
@@ -140,7 +144,7 @@ def sequence():
         return redirect(url_for("index"))
 
     search_string = request.form["search_string"]
-    app.logger.info('Search: {%s}', search_string)
+    app.logger.info("Search: {%s}", search_string)
     sequence_search_result = Sequence.query.join(Vendor).filter(
         or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
     )
@@ -150,7 +154,7 @@ def sequence():
     return render_template(
         "sequence.html",
         title=f"Sequence Search ({ search_string })",
-        sequences=sequence_search_result,
+        sequences=[normalize_price(x) for x in sequence_search_result],
         vendor_count=vendor_count,
         sequence_count=sequence_count,
         today=datetime.now(),
@@ -159,7 +163,7 @@ def sequence():
 
 @app.route("/vendor-list", methods=["GET"])
 def vendor_list():
-    app.logger.info('Vendor List')
+    app.logger.info("Vendor List")
     vendors = Vendor.query.order_by(Vendor.name).all()
 
     # This extra logic is needed because some vendors don't have urls in the database.
@@ -197,6 +201,17 @@ def session_commit():
         print("IntegrityError while adding new user")
         db.session.rollback()
         return jsonify(meta=STRING_FAIL)
+
+
+def normalize_price(sequence: Sequence) -> Sequence:
+    price = sequence.price
+    if "free" in price.lower():
+        sequence.price = "Free"
+        return sequence
+
+    price = float(price.replace("$", ""))
+    sequence.price = f"${price:.2f}"
+    return sequence
 
 
 if __name__ == "__main__":
