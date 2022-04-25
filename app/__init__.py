@@ -158,6 +158,7 @@ def sequence():
         vendor_count=vendor_count,
         sequence_count=sequence_count,
         today=datetime.now(),
+        search_string=search_string,
     )
 
 
