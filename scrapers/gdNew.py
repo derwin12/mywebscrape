@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import urllib.parse
+import os
 
 from bs4 import BeautifulSoup
 
@@ -8,6 +9,7 @@ from my_funcs import insert_sequence
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 from chromedriver_py import binary_path
 import selenium.webdriver.chrome.service as Service
@@ -54,8 +56,15 @@ def main() -> None:
     print(f"Loading %s" % storename)
 
     print(f"Loading %s" % SHARED_LINK)
-    service_object = Service.Service(binary_path)
-    driver = webdriver.Chrome(service=service_object)
+    if os.name != "posix":
+        service_object = Service.Service(binary_path)
+        driver = webdriver.Chrome(service=service_object)
+    else:
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome(service=Service('/usr/bin/chromedriver'), options=options)
     driver.maximize_window()
     driver.implicitly_wait(10)
     driver.get(SHARED_LINK)
