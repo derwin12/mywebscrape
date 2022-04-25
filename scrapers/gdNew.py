@@ -11,8 +11,11 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
-from chromedriver_py import binary_path
-import selenium.webdriver.chrome.service as Service
+if os.name != "posix":
+    from chromedriver_py import binary_path
+    import selenium.webdriver.chrome.service as Service
+else:
+    from selenium.webdriver.chrome.service import Service
 
 
 SHARED_LINK = "https://drive.google.com/drive/folders/0B2ozCEidtWh3ZURlVWFvenRiSVk" + \
