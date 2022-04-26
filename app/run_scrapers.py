@@ -10,6 +10,7 @@ def main() -> None:
     cfol.main()
     clc.main()
     east.main()
+    es.main()
     fpd.main()
     hc.main()
     hs.main()
