@@ -31,7 +31,7 @@ def main() -> None:
     sa.main()
     sd.main()
     sequence_solutions.main()
-    sequence_outlet.main()
+ #  sequence_outlet.main()
     showtime.main()
     sl.main()
     ss.main()
