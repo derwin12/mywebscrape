@@ -36,11 +36,16 @@ def get_product_info(url: str) -> tuple[str, str]:
 
 
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-    product_table = soup.find_all("table")[1]
+    try:
+        product_table = soup.find_all("table")[1]
+    except IndexError:
+        print("Nothing found for store")
+        return []
+
+    sequences = []
     tds = product_table.find_all("td")
     products = [x for x in tds if x.text.strip()][:-1]
 
-    sequences = []
     for product in products:
         product_url = urljoin(url, product.find("a")["href"])
         sequence_name, price = get_product_info(product_url)
