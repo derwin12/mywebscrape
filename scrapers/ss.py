@@ -9,7 +9,7 @@ from my_funcs import insert_sequence
 
 from app import BaseUrl, Vendor
 
-storename = 'ShowStopper Sequences'
+storename = 'Showstopper Sequences'
 
 
 @dataclass
