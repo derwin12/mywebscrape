@@ -210,7 +210,7 @@ def normalize_price(sequence: Sequence) -> Sequence:
         sequence.price = "Free"
         return sequence
 
-    price = float(price.replace("$", ""))
+    price = float(price.replace("$", "").replace("-", "").replace(",", ""))
     sequence.price = f"${price:.2f}"
     return sequence
 
