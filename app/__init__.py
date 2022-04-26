@@ -211,8 +211,12 @@ def normalize_price(sequence: Sequence) -> Sequence:
         sequence.price = "Free"
         return sequence
 
-    price = float(re.sub(r"[^0-9\.]", "", price))
-    sequence.price = f"${price:.2f}"
+    try:
+        price = float(re.sub(r"[^0-9\.]", "", price))
+        sequence.price = f"${price:.2f}"
+    except ValueError:
+        sequence.price = "Unknown"
+
     return sequence
 
 
