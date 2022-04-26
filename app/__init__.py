@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -210,7 +211,7 @@ def normalize_price(sequence: Sequence) -> Sequence:
         sequence.price = "Free"
         return sequence
 
-    price = float(price.replace("$", "").replace("-", "").replace(",", ""))
+    price = float(re.sub(r"[^0-9\.]", "", price))
     sequence.price = f"${price:.2f}"
     return sequence
 
