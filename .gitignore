@@ -1,5 +1,7 @@
 app/sequences.db
 scrapers/client_secrets.json
+.idea
+.DS_Store
 
 ####################
 ### PYTHON STUFF ###
