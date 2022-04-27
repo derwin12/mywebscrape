@@ -37,10 +37,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('vendor_list')}}">Vendor List</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
+            <li>
+                <a class="nav-link" href="#FAQModal" data-bs-toggle="modal" data-bs-target="#FAQModal">FAQ</a>
             </li>
         </ul>
+
         <form class="d-flex" action="{{url_for('sequence')}}" method="post">
             <input class="form-control me-2" name="search_string" type="text" placeholder="{{ search_string or 'Search' }}" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
@@ -63,7 +64,37 @@
 	</script>
 </head>
 <body>
-    
+<!-- FAQ -->
+<div class="modal fade" id="FAQModal" tabindex="-1" aria-labelledby="FAQLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-primary" id="FAQLabel">Search Index FAQ</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h2 class="text-start text-secondary">How to use the search:</h2>
+                <p>First, if you are mobile, you may need to use the upper right menu button to show the Search box.
+                    &nbsp;Otherwise, simply enter your search term in the Search box and click Search.</p>
+                <p>It is best to be brief, one or two words. Either the store name OR the song title.</p>
+                <p>To further reduce your results, you can enter a term in the Filter box.
+                    &nbsp;Perhaps a price, a store name, title keyword etc.</p>
+                <h2 class="text-start text-secondary">Notes:</h2>
+                <uol style="font-size: 14px; line-height: 32px; font-weight: bold;">
+                    <li>Updated Daily</li>
+                    <li><b>NEW</b> labelled sequences were <b>First Seen</b> in the past 60 days</li>
+                    <li><b>UXSG</b> is a Facebook group available ONLY to members of the <b><a href="https://www.facebook.com/groups/2960969610803119">Unofficial xLights Sharing Group</a></b></li>
+                </uol>
+                <p>&nbsp; &nbsp;</p>
+                <p><strong>If you have suggestions or store updates, please post an issue on
+                    <a href="https://github.com/derwin12/mywebscrape/issues">GitHub.</a></strong>
+                    <br /><br /><strong>Enjoy!</strong></p>
+                <p><strong>&nbsp;</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
     {% block content %}
     {% endblock content%}
 
