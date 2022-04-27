@@ -27,7 +27,7 @@
                 {% for vendor in vendors %}
                 <tr>
                     <td class="text-start"><a href="{{ vendor.url }}">{{ vendor.name }}</a></td>
-                    <td class="text-end">{{ vendor.sequence_count }}</td>
+                    <td class="text-end"><a href="/search?query={{ vendor.name }}">{{ vendor.sequence_count }}</a></td>
                 </tr>
                 {% endfor %}
             </table>

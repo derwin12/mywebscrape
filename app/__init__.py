@@ -142,10 +142,15 @@ def register_url():
 
 @app.route("/search", methods=["GET", "POST"])
 def sequence():
-    if request.method == "GET":
+    if request.method == "GET" and request.args.get('query') is None:
         return redirect(url_for("index"))
 
-    search_string = request.form["search_string"]
+    if request.method == "GET":
+        search_string = request.args.get('query')
+    else:
+        search_string = request.form["search_string"]
+    print(search_string)
+
     app.logger.info("Search: {%s}", search_string)
     sequence_search_result = Sequence.query.join(Vendor).filter(
         or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
