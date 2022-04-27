@@ -20,11 +20,14 @@
             <table class="table table-responsive table-striped">
                 <thead>
                 <tr>
+                    <td class="text-center fs-3">Name</td>
+                    <td class="text-center fs-3">Seq Count</td>
                 </tr>
                 </thead>
                 {% for vendor in vendors %}
                 <tr>
-                    <td><a href="{{ vendor.url }}">{{ vendor.name }}</a></td>
+                    <td class="text-start"><a href="{{ vendor.url }}">{{ vendor.name }}</a></td>
+                    <td class="text-end">{{ vendor.sequence_count }}</td>
                 </tr>
                 {% endfor %}
             </table>

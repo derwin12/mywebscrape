@@ -1,4 +1,5 @@
 from scrapers import *
+from my_funcs import update_vendor_counts
 import os
 
 
@@ -44,6 +45,7 @@ def main() -> None:
     wls.main()
     xl.main()
     xtreme.main()
+    update_vendor_counts.main()
     print("Scraping complete.")
 
 

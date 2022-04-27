@@ -42,6 +42,7 @@ class Vendor(db.Model):  # type: ignore
     sequences = db.relationship("Sequence", backref="vendor", lazy=True)
     time_created = db.Column(DateTime(timezone=False), server_default=func.now())
     time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
+    sequence_count = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f"<Vendor {self.name}>"
@@ -166,23 +167,24 @@ def sequence():
 @app.route("/vendor-list", methods=["GET"])
 def vendor_list():
     app.logger.info("Vendor List")
-    vendors = Vendor.query.order_by(Vendor.name).all()
+    vendorquery = Vendor.query.order_by(Vendor.name).all()
 
     # This extra logic is needed because some vendors don't have urls in the database.
-    vendor_list = []
-    for vendor in vendors:
+    vendorlist = []
+    for vendor in vendorquery:
         try:
             url = vendor.urls[0].url
         except IndexError:
             url = ""
 
         name = vendor.name
-        vendor_list.append({"name": name, "url": url})
+        sequence_count = vendor.sequence_count
+        vendorlist.append({"name": name, "url": url, "sequence_count": sequence_count})
 
     return render_template(
         "vendor_list.html",
         title=f"Vendor List",
-        vendors=vendor_list,
+        vendors=vendorlist,
     )
 
 
