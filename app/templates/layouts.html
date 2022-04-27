@@ -40,7 +40,7 @@
         </ul>
 
         <form class="d-flex" action="{{url_for('sequence')}}" method="post">
-            <input class="form-control me-2" name="search_string" type="text" placeholder="{{ search_string or 'Search' }}" aria-label="Search">
+            <input class="form-control me-2" name="search_string" type="text" placeholder="Search" value="{{ search_string}}" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
         </div>
