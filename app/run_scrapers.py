@@ -16,6 +16,7 @@ def main() -> None:
     hs.main()
     inspire.main()
     jjs.main()
+    justrgb.main()
     jl_pixel_sequences.main()
     led.main()
     lightem.main()
