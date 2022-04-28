@@ -1,4 +1,5 @@
 import os
+import re
 from dataclasses import dataclass
 
 import httpx
@@ -27,7 +28,16 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = product.find("h4").text
         # song, artist = sequence_name.split(" - ")
         product_url = product.find("a")["href"]
-        price = "-"
+        p = product.find("p", class_="price").text
+        pattern = r'[^0-9\.\$]+'
+        price_text = re.sub(pattern, ' ', p).strip()
+        pattern = re.compile("(\$[0-9]+).*(\$[0-9]+)")
+        try:
+            price = pattern.search(price_text)[2]
+        except:
+            price = price_text
+        if price == "$0":
+            price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
     next_page = soup.find(class_="next")
@@ -51,7 +61,8 @@ def main() -> None:
         products = get_products_from_page(soup, BASEURL + "\\" + p.name)
 
         for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+            print(product)
+            #insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":
