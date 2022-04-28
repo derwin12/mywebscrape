@@ -16,6 +16,7 @@ def main() -> None:
     hc.main()
     hs.main()
     inspire.main()
+    innovative.main()
     jjs.main()
     justrgb.main()
     jl_pixel_sequences.main()
