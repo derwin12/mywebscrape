@@ -11,8 +11,7 @@ from pathlib import Path
 
 storename = 'Music with Motion'
 BASEURL = 'https://musicwithmotion.com/'
-FileDir = "\\MusicWithMotion"
-
+FileDir = "MusicWithMotion"
 
 @dataclass
 class Sequence:
@@ -51,7 +50,10 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 def main() -> None:
     print(f"Loading %s" % storename)
-    htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
+    if os.name != "posix":
+        htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
+    else:
+        htmldir = os.getcwd() + "//app//Data//" + FileDir
     for p in Path(htmldir).glob('*.html'):
         print(f"Loading %s" % (p.name.split('.')[0]))
         with p.open() as f:
@@ -61,8 +63,7 @@ def main() -> None:
         products = get_products_from_page(soup, BASEURL + "\\" + p.name)
 
         for product in products:
-            print(product)
-            #insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":
