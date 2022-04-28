@@ -8,7 +8,7 @@ from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, desc, exc, func, or_
+from sqlalchemy import DateTime, desc, exc, func, or_, and_
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__, instance_relative_config=True)
@@ -147,14 +147,33 @@ def sequence():
 
     if request.method == "GET":
         search_string = request.args.get('query')
+        search_type = 'all'
     else:
         search_string = request.form["search_string"]
-    print(search_string)
+        search_type = request.form["search_type"]
 
-    app.logger.info("Search: {%s}", search_string)
-    sequence_search_result = Sequence.query.join(Vendor).filter(
-        or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
-    )
+    print("Search: {%s} {%s}" % (search_string, search_type))
+    app.logger.info("Search: {%s} {%s}", search_string, search_type)
+
+    if search_type == 'free':
+        sequence_search_result = Sequence.query.join(Vendor) \
+            .filter(and_(Sequence.price == 'Free'),
+                    or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
+                    )
+    elif search_type == 'paid':
+        sequence_search_result = Sequence.query.join(Vendor) \
+            .filter(and_(Sequence.price != 'Free'),
+                    or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
+                    )
+    elif search_type == 'uxsg':
+        sequence_search_result = Sequence.query.join(Vendor) \
+            .filter(and_(Vendor.name != 'UXSG'),
+                    or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
+                    )
+    else:
+        sequence_search_result = Sequence.query.join(Vendor).filter(
+            or_(Sequence.name.contains(search_string), Vendor.name.contains(search_string))
+        )
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
