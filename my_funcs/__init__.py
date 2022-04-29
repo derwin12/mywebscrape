@@ -78,3 +78,14 @@ def create_or_update_sequence(sequences: list[Sequence]) -> None:
             db.session.add(sequence)
 
         db.session.commit()
+
+
+def get_unique_vendor(storename: str) -> Vendor:
+    vendor = Vendor.query.filter_by(name=storename).all()
+    if not vendor:
+        raise Exception(f"{storename} not found in database.")
+    elif len(vendor) > 1:
+        raise Exception(f"{storename} found multiple times in database.")
+
+    vendor = vendor[0]
+    return vendor

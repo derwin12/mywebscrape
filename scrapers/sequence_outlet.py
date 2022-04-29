@@ -1,12 +1,11 @@
+import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
 import httpx
-from bs4 import BeautifulSoup
-
-from my_funcs import insert_sequence
-import re
 from app import Vendor
+from bs4 import BeautifulSoup
+from my_funcs import get_unique_vendor, insert_sequence
 
 storename = "Sequence Outlet"
 
@@ -18,37 +17,18 @@ class Sequence:
     price: str
 
 
-def get_product_info(url: str) -> tuple[str, str]:
-    response = httpx.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
-    trs = soup.find_all("tr")
-    name = trs[2].find_all("b")[1].text.strip()
-    name = re.sub(r"\W\W+", " ", name)
-    if "free" in name.lower():
-        name = name.split()[0]
-        price = "Free"
-    else:
-        price = trs[4].find_all("font")[0].text.split()[1]
-    if price == "$0.00":
-        price = "Free"
-
-    return name, price
-
-
 def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
-    try:
-        product_table = soup.find_all("table")[1]
-    except IndexError:
-        print("Nothing found for store")
-        return []
 
+    products = soup.find_all("div", class_="card--standard")
     sequences = []
-    tds = product_table.find_all("td")
-    products = [x for x in tds if x.text.strip()][:-1]
-
     for product in products:
+        sequence_name = product.find("h3").text.strip()
         product_url = urljoin(url, product.find("a")["href"])
-        sequence_name, price = get_product_info(product_url)
+        price_str = product.find("span", class_="price-item--sale").text.strip()
+        price = "$" + re.sub(r"[^0-9\.]", "", price_str)
+        if price == "$0.00":
+            price = "Free"
+
         sequences.append(Sequence(sequence_name, product_url, price))
 
     return sequences
@@ -56,17 +36,11 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 def main() -> None:
     print(f"Loading %s" % storename)
+    vendor = get_unique_vendor(storename)
 
-    vendor = Vendor.query.filter_by(name=storename).all()
-    if not vendor:
-        raise Exception(f"{storename} not found in database.")
-    elif len(vendor) > 1:
-        raise Exception(f"{storename} found multiple times in database.")
-
-    baseurls = vendor[0].urls
-    for baseurl in baseurls:
+    for baseurl in vendor.urls:
         print(f"Loading %s" % baseurl.url)
-        response = httpx.get(baseurl.url)
+        response = httpx.get(baseurl.url, follow_redirects=True)
         soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, baseurl.url)
 
