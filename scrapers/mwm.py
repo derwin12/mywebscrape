@@ -9,6 +9,7 @@ from my_funcs import insert_sequence
 from app import BaseUrl, Vendor
 
 from selenium.webdriver.common.by import By
+from selenium import webdriver
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
@@ -16,7 +17,6 @@ from selenium.webdriver.support import expected_conditions
 
 
 storename = 'Music with Motion'
-lastval = ""
 
 
 @dataclass
@@ -26,7 +26,7 @@ class Sequence:
     price: str
 
 
-def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+def get_products_from_page(soup: BeautifulSoup) -> list[Sequence]:
     products = soup.find_all("div", class_="product-layout")
     sequences = []
     for product in products:
@@ -44,12 +44,6 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
             price = "Free"
         sequences.append(Sequence(sequence_name, product_url, price))
 
-    next_page = soup.find(class_="next")
-    if next_page:
-        response = httpx.get(next_page["href"])  # type: ignore
-        next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(next_soup, url))
-
     return sequences
 
 
@@ -60,10 +54,17 @@ def main() -> None:
     for baseurl in baseurls:
         print(f"Loading %s" % baseurl[0].url)
 
-        driver = uc.Chrome(version_main=100)
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        options.add_argument("start-maximized")
+        options.add_experimental_option('useAutomationExtension', False)
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        caps = options.to_capabilities()
+
+        driver = uc.Chrome(version_main=100, desired_capabilities=caps)
         driver.get(baseurl[0].url)
         try:
-            WebDriverWait(driver, 20)\
+            WebDriverWait(driver, 15)\
                 .until(expected_conditions.presence_of_element_located((By.CLASS_NAME, "product-details")))
         except TimeoutException:
             print("Unable to load")
@@ -71,11 +72,13 @@ def main() -> None:
         html = driver.page_source
         driver.close()
         soup = BeautifulSoup(html, "html.parser")
-        products = get_products_from_page(soup, baseurl[0].url)
+        products = get_products_from_page(soup)
 
         for product in products:
             print(product)
-            #insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+#            #insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+
+        break
 
 
 if __name__ == "__main__":
