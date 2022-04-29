@@ -26,7 +26,7 @@ def main() -> None:
     ll.main()
     lotn.main()
     magical.main()
-    mwm.main()
+  #  mwm.main()
     og.main()
     ppd.main()
     pps.main()
