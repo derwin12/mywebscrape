@@ -1,17 +1,23 @@
-import os
-import re
 from dataclasses import dataclass
+import re
+import undetected_chromedriver as uc
 
-import httpx
 from bs4 import BeautifulSoup
 
 from my_funcs import insert_sequence
 
-from pathlib import Path
+from app import BaseUrl, Vendor
+
+from selenium.webdriver.common.by import By
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions
+
 
 storename = 'Music with Motion'
-BASEURL = 'https://musicwithmotion.com/'
-FileDir = "MusicWithMotion"
+lastval = ""
+
 
 @dataclass
 class Sequence:
@@ -25,15 +31,14 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     sequences = []
     for product in products:
         sequence_name = product.find("h4").text
-        # song, artist = sequence_name.split(" - ")
         product_url = product.find("a")["href"]
         p = product.find("p", class_="price").text
         pattern = r'[^0-9\.\$]+'
         price_text = re.sub(pattern, ' ', p).strip()
         pattern = re.compile("(\$[0-9]+).*(\$[0-9]+)")
         try:
-            price = pattern.search(price_text)[2]
-        except:
+            price = pattern.search(price_text)[22]
+        except IndexError:
             price = price_text
         if price == "$0":
             price = "Free"
@@ -50,20 +55,27 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
 def main() -> None:
     print(f"Loading %s" % storename)
-    if os.name != "posix":
-        htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
-    else:
-        htmldir = os.getcwd() + "//app//Data//" + FileDir
-    for p in Path(htmldir).glob('*.html'):
-        print(f"Loading %s" % (p.name.split('.')[0]))
-        with p.open() as f:
-            html = f.read()
+    baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
+        .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
+    for baseurl in baseurls:
+        print(f"Loading %s" % baseurl[0].url)
 
+        driver = uc.Chrome(version_main=100)
+        driver.get(baseurl[0].url)
+        try:
+            WebDriverWait(driver, 20)\
+                .until(expected_conditions.presence_of_element_located((By.CLASS_NAME, "product-details")))
+        except TimeoutException:
+            print("Unable to load")
+            pass
+        html = driver.page_source
+        driver.close()
         soup = BeautifulSoup(html, "html.parser")
-        products = get_products_from_page(soup, BASEURL + "\\" + p.name)
+        products = get_products_from_page(soup, baseurl[0].url)
 
         for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+            print(product)
+            #insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
 
 
 if __name__ == "__main__":
