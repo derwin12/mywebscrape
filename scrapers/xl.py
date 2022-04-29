@@ -24,10 +24,14 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
     products = soup.find_all("div", class_="structItem")
     sequences = []
     for product in products:
+        category = product.find("a", class_="labelLink").text.lower()
+
         pattern = r'[^A-Za-z0-9\-\'\.()&]+'
         s = product.find("div", class_="structItem-title").find("a", attrs={"data-tp-primary": "on"}).text
         sequence_name = re.sub(pattern, ' ', s).strip()
-        # song, artist = sequence_name.split(" - ")
+        if 'vendor' in category:
+            print(f"Skipping (%s) %s" % (category, sequence_name))
+            break
         product_url = urljoin(url,
                               product.find("div",
                                            class_="structItem-title")
