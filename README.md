@@ -34,3 +34,23 @@ Install in Pi Notes:
  CRONJOB
    5 15 * * * cd /home/pi/mywebscrape; sh -x ./runit.sh > /tmp/logit
 ```
+
+## Database Migrations
+Edit the classes in app/__init__.py for the database schema
+
+```$ flask db migrate -m "Some comment"```
+
+```$ flask db upgrade ```
+
+Sample: 
+```
+    flask db migrate -m "Adding vendor count"
+    INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+    INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+    INFO  [alembic.autogenerate.compare] Detected added column 'vendor.sequence_count'
+    Generating migrations/versions/f38b854cb661_adding_vendor_count.py ...  done
+    flask db upgrade
+    INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+    INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+    INFO  [alembic.runtime.migration] Running upgrade 77fdfbc43629 -> f38b854cb661, Adding vendor count
+```
