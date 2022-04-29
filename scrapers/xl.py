@@ -31,7 +31,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         sequence_name = re.sub(pattern, ' ', s).strip()
         if 'vendor' in category:
             print(f"Skipping (%s) %s" % (category, sequence_name))
-            break
+            continue
         product_url = urljoin(url,
                               product.find("div",
                                            class_="structItem-title")
