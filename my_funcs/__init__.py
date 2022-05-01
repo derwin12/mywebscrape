@@ -5,8 +5,7 @@ from sqlalchemy import and_
 
 
 def delete_sequence(store, name, last_upd):
-    vendor = Vendor.query.filter(Vendor.name == store).first()
-    if vendor:
+    if vendor := Vendor.query.filter(Vendor.name == store).first():
         looking_for_name = "%{0}%".format(name)
 
         vendorid = vendor.id
@@ -18,9 +17,9 @@ def delete_sequence(store, name, last_upd):
             )
         ).count()
         print(
-            "Deleting %s rows from %s where name like %s and last_update is prior to %s"
-            % (row_cnt, store, name, last_upd)
+            f"Deleting {row_cnt} rows from {store} where name like {name} and last_update is prior to {last_upd}"
         )
+
         if row_cnt > 0:
             Sequence.query.filter(
                 and_(
@@ -40,7 +39,7 @@ def insert_sequence(store, url, name, price="-"):
         time_updated=datetime.now(),
         price=price,
     )
-    print("Adding %s [%s]" % (sequence.name, price))
+    print(f"Adding {sequence.name} [{price}]")
     seq = Sequence.query.filter(
         Sequence.link == url and Sequence.vendor_id == vendor.id
     ).first()
@@ -66,16 +65,16 @@ def insert_sequence(store, url, name, price="-"):
 def create_or_update_sequence(sequences: list[Sequence]) -> None:
     for sequence in sequences:
         curr = Sequence.query.filter_by(link=sequence.link).first()
-        if curr and sequence.price == curr.price:
-            print(f"{sequence.name} already exists with price of {sequence.price}.")
-        elif curr and sequence.price != curr.price:
-            print(
-                f"{sequence.name} price has changed from {sequence.price} to {curr.price}."
-            )
-            curr.price = sequence.price
-        else:
+        if not curr:
             print(f"Adding {sequence.name} to database.")
             db.session.add(sequence)
+        elif sequence.price == curr.price:
+            print(f"{sequence.name} already exists with price of {sequence.price}.")
+        else:
+            print(
+                f"{sequence.name} price has changed from {curr.price} to {sequence.price}."
+            )
+            curr.price = sequence.price
 
         db.session.commit()
 
