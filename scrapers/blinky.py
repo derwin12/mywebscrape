@@ -1,12 +1,14 @@
 import httpx
-from app import Sequence
+from app import Sequence, Vendor
 from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "BlinkySequences"
 
 
-def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+def get_products_from_page(
+    soup: BeautifulSoup, url: str, vendor: Vendor
+) -> list[Sequence]:
     products = soup.find_all(class_="product")
     sequences = []
     for product in products:
@@ -17,7 +19,11 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         price = product.find(class_="price").text
         if price == "$0.00":
             price = "Free"
-        sequences.append(Sequence(name=sequence_name, link=product_url, price=price))
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
 
     return sequences
 
@@ -30,9 +36,9 @@ def main() -> None:
         print(f"Loading {url.url}")
         response = httpx.get(url.url)
         soup = BeautifulSoup(response.text, "html.parser")
-        products = get_products_from_page(soup, url.url)
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
-        create_or_update_sequences(products)
+        create_or_update_sequences(sequences)
 
 
 if __name__ == "__main__":
