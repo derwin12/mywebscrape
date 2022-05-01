@@ -1,66 +1,57 @@
 import re
-from dataclasses import dataclass
 from urllib.parse import urljoin
 
 import httpx
+from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-
-from my_funcs import insert_sequence
-
-from app import BaseUrl, Vendor
-
-storename = 'BF Light Shows'
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 
-@dataclass
-class Sequence:
-    name: str
-    url: str
-    price: str
+storename = "BF Light Shows"
 
 
-def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+def get_products_from_page(
+    soup: BeautifulSoup, url: str, vendor: Vendor
+) -> list[Sequence]:
 
-    products = soup.find_all("div", class_="grid__item small--one-half medium-up--one-fifth")
+    products = soup.find_all(
+        "div", class_="grid__item small--one-half medium-up--one-fifth"
+    )
 
     sequences = []
     for product in products:
         sequence_name = product.find(class_="product-card__name").text
         product_url = urljoin(url, product.find("a")["href"])
-        p = product.find("div", class_="product-card__price").text
-        pattern = r'[^0-9\.\$]+'
-        p_text = re.sub(pattern, ' ', p).strip()
-        pattern = re.compile("(\$[0-9]+).*(\$[0-9]+)")
-        try:
-            price = pattern.search(p_text)[2]
-        except:
-            price = p_text
-        if price == "$0":
+        p_str = product.find("div", class_="product-card__price").text.strip()
+        prices = re.findall(r".*\$([0-9\.]+).*", p_str)
+        price = prices[0] if len(prices) == 1 else min(int(x) for x in prices)
+        if price == "0":
             price = "Free"
-        sequences.append(Sequence(sequence_name, product_url, price))
-
-    next_page = soup.find(class_="next")
-    if next_page:
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
+    if next_page := soup.find(class_="next"):
         next_page_url = urljoin(url, next_page.find("a")["href"])  # type: ignore
         response = httpx.get(next_page_url)
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(next_soup, url))
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
     return sequences
 
 
 def main() -> None:
-    print(f"Loading %s" % storename)
-    baseurls = BaseUrl.query.join(Vendor).add_columns(Vendor.name.label("vendor_name")) \
-        .filter(Vendor.name == storename).order_by(BaseUrl.id).all()
-    for baseurl in baseurls:
-        print(f"Loading %s" % baseurl[0].url)
-        response = httpx.get(baseurl[0].url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        products = get_products_from_page(soup, baseurl[0].url)
+    print(f"Loading {storename}")
+    vendor = get_unique_vendor(storename)
 
-        for product in products:
-            insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
+    for url in vendor.urls:
+        print(f"Loading {url.url}")
+        response = httpx.get(url.url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+
+        create_or_update_sequences(sequences)
 
 
 if __name__ == "__main__":
