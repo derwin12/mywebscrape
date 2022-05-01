@@ -1,7 +1,7 @@
 from urllib.parse import urljoin
 
 import httpx
-from app import BaseUrl, Sequence, Vendor
+from app import Sequence
 from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequence, get_unique_vendor
 
