@@ -2,6 +2,7 @@ from datetime import datetime
 
 from app import Sequence, Vendor, db
 from sqlalchemy import and_
+from sqlalchemy.exc import NoResultFound
 
 
 def delete_sequence(store, name, last_upd):
@@ -82,9 +83,9 @@ def create_or_update_sequences(sequences: list[Sequence]) -> None:
 def get_unique_vendor(storename: str) -> Vendor:
     vendor = Vendor.query.filter_by(name=storename).all()
     if not vendor:
-        raise Exception(f"{storename} not found in database.")
+        raise NoResultFound(f"{storename} not found in database.")
     elif len(vendor) > 1:
-        raise Exception(f"{storename} found multiple times in database.")
+        raise ValueError(f"{storename} found multiple times in database.")
 
     vendor = vendor[0]
     return vendor
