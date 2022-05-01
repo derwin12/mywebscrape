@@ -62,7 +62,7 @@ def insert_sequence(store, url, name, price="-"):
     db.session.commit()
 
 
-def create_or_update_sequence(sequences: list[Sequence]) -> None:
+def create_or_update_sequences(sequences: list[Sequence]) -> None:
     for sequence in sequences:
         curr = Sequence.query.filter_by(link=sequence.link).first()
         if not curr:

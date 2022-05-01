@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 import httpx
 from app import Sequence
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequence, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Innovative Sequences"
 
@@ -36,7 +36,7 @@ def main() -> None:
         soup = BeautifulSoup(response.text, "html.parser")
         products = get_products_from_page(soup, url.url)
 
-        create_or_update_sequence(products)
+        create_or_update_sequences(products)
 
 
 if __name__ == "__main__":

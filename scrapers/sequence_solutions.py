@@ -1,7 +1,7 @@
 import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequence
+from my_funcs import create_or_update_sequences
 
 storename = "Sequence Solutions"
 
@@ -49,7 +49,7 @@ def main() -> None:
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, link=baseurl.url, vendor=vendor)
 
-        create_or_update_sequence(sequences)
+        create_or_update_sequences(sequences)
 
 
 if __name__ == "__main__":
