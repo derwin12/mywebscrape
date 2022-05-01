@@ -1,64 +1,52 @@
-from dataclasses import dataclass
+import re
 from urllib.parse import urljoin
 
 import httpx
+from app import Sequence, Vendor
 from bs4 import BeautifulSoup
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
-from my_funcs import insert_sequence
-
-from app import BaseUrl, Vendor
-import re
 
 storename = "Electro Sequences"
 
 
-@dataclass
-class Sequence:
-    name: str
-    url: str
-    price: str
-
-
-def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
+def get_products_from_page(
+    soup: BeautifulSoup, url: str, vendor: Vendor
+) -> list[Sequence]:
     products = soup.find_all("div", class_="grid-view-item")
     sequences = []
     for product in products:
         sequence_name = product.find("div", class_="h4").text.strip()
-        product_url = urljoin(url, product.find("a", class_="grid-view-item__link")["href"])
-        p = product.find("div", class_="price__regular").text
-        pattern = r'[^0-9\.\$]+'
-        price_text = re.sub(pattern, ' ', p).strip()
-        pattern = re.compile("(\$[0-9]+).*(\$[0-9]+)")
-        try:
-            price = pattern.search(price_text)[2]
-        except TypeError:
-            price = price_text
-        if price == "$0":
+        product_url = urljoin(
+            url, product.find("a", class_="grid-view-item__link")["href"]
+        )
+        price_float = min(
+            float(x.text.strip().replace("$", ""))
+            for x in product.find_all(class_="price-item")
+        )
+        price = f"${price_float:.2f}"
+        if price == "$0.00":
             price = "Free"
-        sequences.append(Sequence(sequence_name, product_url, price))
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
 
     return sequences
 
 
 def main() -> None:
-    print(f"Loading %s" % storename)
-    baseurls = (
-        BaseUrl.query.join(Vendor)
-        .add_columns(Vendor.name.label("vendor_name"))
-        .filter(Vendor.name == storename)
-        .order_by(BaseUrl.id)
-        .all()
-    )
-    for baseurl in baseurls:
-        print(f"Loading %s" % baseurl[0].url)
-        response = httpx.get(baseurl[0].url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        products = get_products_from_page(soup, baseurl[0].url)
+    print(f"Loading {storename}")
+    vendor = get_unique_vendor(storename)
 
-        for product in products:
-            insert_sequence(
-                store=storename, url=product.url, name=product.name, price=product.price
-            )
+    for url in vendor.urls:
+        print(f"Loading {url.url}")
+        response = httpx.get(url.url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+
+        create_or_update_sequences(sequences)
 
 
 if __name__ == "__main__":
