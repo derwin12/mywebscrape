@@ -87,5 +87,4 @@ def get_unique_vendor(storename: str) -> Vendor:
     elif len(vendor) > 1:
         raise ValueError(f"{storename} found multiple times in database.")
 
-    vendor = vendor[0]
-    return vendor
+    return vendor[0]
