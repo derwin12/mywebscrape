@@ -1,5 +1,4 @@
 import re
-from urllib.parse import urljoin
 
 import httpx
 from app import Sequence, Vendor
