@@ -32,6 +32,7 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
+
     if next_page := soup.find(class_="next"):
         next_page_url = urljoin(url, next_page.find("a")["href"])  # type: ignore
         response = httpx.get(next_page_url)
