@@ -1,14 +1,16 @@
 import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences
+from my_funcs import create_or_update_sequences, get_unique_vendor
+
 
 storename = "Sequence Solutions"
 
 
 def get_products_from_page(
-    soup: BeautifulSoup, link: str, vendor: Vendor
+    soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
+
     products = soup.find_all("div", class_="edd_download item")
     sequences = []
     for product in products:
@@ -25,29 +27,20 @@ def get_products_from_page(
     if next_page:
         response = httpx.get(next_page["href"])  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(
-            get_products_from_page(soup=next_soup, link=link, vendor=vendor)
-        )
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
     return sequences
 
 
 def main() -> None:
-    print(f"Loading %s" % storename)
+    print(f"Loading {storename}")
+    vendor = get_unique_vendor(storename)
 
-    vendor = Vendor.query.filter_by(name=storename).all()
-    if not vendor:
-        raise Exception(f"{storename} not found in database.")
-    elif len(vendor) > 1:
-        raise Exception(f"{storename} found multiple times in database.")
-
-    vendor = vendor[0]
-    baseurls = vendor.urls
-    for baseurl in baseurls:
-        print(f"Loading %s" % baseurl.url)
-        response = httpx.get(baseurl.url)
+    for url in vendor.urls:
+        print(f"Loading {url.url}")
+        response = httpx.get(url.url, follow_redirects=True)
         soup = BeautifulSoup(response.text, "html.parser")
-        sequences = get_products_from_page(soup=soup, link=baseurl.url, vendor=vendor)
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
         create_or_update_sequences(sequences)
 
