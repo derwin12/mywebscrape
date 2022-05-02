@@ -35,7 +35,7 @@ def main() -> None:
     sa.main()
     sd.main()
     sequence_solutions.main()
- #  sequence_outlet.main()
+    sequence_outlet.main()
     showtime.main()
     sl.main()
     ss.main()
@@ -48,7 +48,6 @@ def main() -> None:
     xtreme.main()
     update_vendor_counts.main()
     print("Scraping complete.")
-
 
 
 if __name__ == "__main__":
