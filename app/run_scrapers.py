@@ -22,6 +22,7 @@ def main() -> None:
     jl_pixel_sequences.main()
     led.main()
     lightem.main()
+    lights_on_mamie.main()
     livermore.main()
     ll.main()
     lotn.main()
