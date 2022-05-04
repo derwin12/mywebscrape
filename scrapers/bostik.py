@@ -24,8 +24,10 @@ def get_products_from_page(
         product_url = urljoin(url, product.find("a")["href"])
         p_str = product.find("div", class_="product-card__price").text.strip()
         prices = re.findall(r".*\$([0-9\.]+).*", p_str)
-        price = prices[0] if len(prices) == 1 else min(int(x) for x in prices)
-        if price == "0":
+        price = prices[0] if len(prices) == 1 else str(min(int(x) for x in prices))
+        if "$" not in price:
+            price = f"${price}"
+        if price == "$0":
             price = "Free"
         sequences.append(
             Sequence(
