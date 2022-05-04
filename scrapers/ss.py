@@ -44,9 +44,9 @@ def get_products_from_page(
         )
     next_page = soup.find("a", text="Next Page")
     if next_page:
-        next_page_url = urljoin(url, next_page["href"], timeout=30.0)  # type: ignore
+        next_page_url = urljoin(url, next_page["href"])  # type: ignore
         print(f"Loading {next_page_url}")
-        response = httpx.get(next_page_url, timeout=15)
+        response = httpx.get(next_page_url, timeout=30.0)
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
