@@ -34,7 +34,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url)
+        response = httpx.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 

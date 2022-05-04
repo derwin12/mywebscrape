@@ -41,7 +41,7 @@ def main() -> None:
         if not url.url.endswith("300"):
             url.url = f"{url.url}?searching=Y&show=300"
         print(f"Loading {url.url}")
-        response = httpx.get(url.url)
+        response = httpx.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 

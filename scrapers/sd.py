@@ -11,7 +11,7 @@ storename = "Sequence Depot"
 
 
 def get_product_price(url: str) -> str:
-    response = httpx.get(url)
+    response = httpx.get(url, timeout=30.0)
     soup = BeautifulSoup(response.text, "html.parser")
     prices = soup.find_all(class_="price")
     price_foat = min(float(x.text.strip().replace("$", "")) for x in prices)
@@ -46,7 +46,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url)
+        response = httpx.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
