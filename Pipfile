@@ -11,6 +11,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-httpauth = "*"
 python-dotenv = "*"
+rich = "*"
 
 [dev-packages]
 black = "*"
