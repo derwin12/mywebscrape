@@ -34,7 +34,7 @@ def get_products_from_page(
             try:
                 pattern = re.compile(r".*(\$[0-9]+\.[0-9]+).*")
                 price = pattern.search(p_text)[1]  # type: ignore
-            except:
+            except Exception:
                 price = "Free"
 
         sequences.append(
@@ -44,7 +44,7 @@ def get_products_from_page(
         )
     next_page = soup.find("a", text="Next Page")
     if next_page:
-        next_page_url = urljoin(url, next_page["href"])  # type: ignore
+        next_page_url = urljoin(url, next_page["href"], timeout=30.0)  # type: ignore
         print(f"Loading {next_page_url}")
         response = httpx.get(next_page_url, timeout=15)
         next_soup = BeautifulSoup(response.text, "html.parser")
@@ -59,7 +59,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url)
+        response = httpx.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
