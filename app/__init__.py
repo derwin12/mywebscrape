@@ -16,8 +16,9 @@ app = Flask(__name__, instance_relative_config=True)
 logging.basicConfig(
     filename="app.log",
     level=logging.WARN,
-    format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s",
+    format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s",
 )
+
 
 auth = HTTPBasicAuth()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sequences.db"
@@ -42,7 +43,9 @@ class Vendor(db.Model):  # type: ignore
     urls = db.relationship("BaseUrl", backref="vendor", lazy=True)
     sequences = db.relationship("Sequence", backref="vendor", lazy=True)
     time_created = db.Column(DateTime(timezone=False), server_default=func.now())
-    time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
+    time_updated = db.Column(
+        DateTime(timezone=False), server_default=func.now(), onupdate=func.now()
+    )
     sequence_count = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
@@ -55,7 +58,9 @@ class BaseUrl(db.Model):  # type: ignore
     url = db.Column(db.String, nullable=False, unique=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
     time_created = db.Column(DateTime(timezone=False), server_default=func.now())
-    time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
+    time_updated = db.Column(
+        DateTime(timezone=False), server_default=func.now(), onupdate=func.now()
+    )
 
     def __repr__(self):
         return f"<BaseUrl {self.url}>"
@@ -68,7 +73,10 @@ class Sequence(db.Model):  # type: ignore
     vendor_id = db.Column(db.Integer, db.ForeignKey("vendor.id"), nullable=False)
     price = db.Column(db.String, nullable=True)
     time_created = db.Column(DateTime(timezone=False), server_default=func.now())
-    time_updated = db.Column(DateTime(timezone=False), onupdate=func.now())
+    time_updated = db.Column(
+        DateTime(timezone=False), server_default=func.now(), onupdate=func.now()
+    )
+    time_price_changed = db.Column(DateTime(timezone=False), server_default=func.now())
 
     __table_args__ = (
         db.UniqueConstraint("vendor_id", "name", "link", name="sequence_seq_store_idx"),
