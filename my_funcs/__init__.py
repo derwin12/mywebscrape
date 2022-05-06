@@ -1,8 +1,11 @@
 from datetime import datetime
 
 from app import Sequence, Vendor, db
-from sqlalchemy import and_
+from rich.console import Console
+from sqlalchemy import and_, func
 from sqlalchemy.exc import NoResultFound
+
+console = Console()
 
 
 def delete_sequence(store, name, last_upd):
@@ -67,15 +70,24 @@ def create_or_update_sequences(sequences: list[Sequence]) -> None:
     for sequence in sequences:
         curr = Sequence.query.filter_by(link=sequence.link).first()
         if not curr:
-            print(f"Adding {sequence.name} to database.")
+            console.print(":new:", f"Adding [b]{sequence.name}[/b] to database.")
             db.session.add(sequence)
         elif sequence.price == curr.price:
-            print(f"{sequence.name} already exists with price of {sequence.price}.")
-        else:
-            print(
-                f"{sequence.name} price has changed from {curr.price} to {sequence.price}."
+            console.print(
+                f"[b]✓ {sequence.name}[/b] already exists with [b]{sequence.price}[/b].",
+                highlight=False,
             )
+            curr.time_updated = func.now()
+            db.session.add(curr)
+        else:
+            console.print(
+                ":dollar:",
+                f"[b]{sequence.name}[/b] price has changed from [b]{curr.price}[/b] to [b]{sequence.price}[/b].",
+                highlight=False,
+            )
+            curr.time_price_changed = func.now()
             curr.price = sequence.price
+            db.session.add(curr)
 
         db.session.commit()
 
