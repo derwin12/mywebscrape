@@ -1,6 +1,7 @@
-from scrapers import *
-from my_funcs import update_vendor_counts
 import os
+
+from my_funcs import update_vendor_counts
+from scrapers import *
 
 
 def main() -> None:
@@ -13,6 +14,8 @@ def main() -> None:
     east.main()
     es.main()
     fpd.main()
+    geaux_bright.main()
+    haus_of_holiday_lights.main()
     hc.main()
     hs.main()
     inspire.main()
