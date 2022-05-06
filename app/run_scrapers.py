@@ -13,7 +13,7 @@ def main() -> None:
     for scraper in scrapers:
         if scraper.stem in  ["__init__", "gdOther", "gdChristmas", "uxsg"]:
             continue
-        if os.name != "posix" and scraper.name == "ai.py":
+        if os.name == "posix" and scraper.name == "ai.py":
             continue
         print(f"Loading {scraper}")
         result = subprocess.run(["python", scraper])
