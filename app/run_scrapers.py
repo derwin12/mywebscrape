@@ -11,9 +11,12 @@ def main() -> None:
     scrapers = sorted(scrapers_path.glob("*.py"))
 
     for scraper in scrapers:
-        if scraper.stem in  ["__init__", "gdOther", "gdChristmas", "uxsg"]:
+        print(scraper.stem)
+        if scraper.stem in  ["__init__", "gdOther", "gdChristmas", "uxsg","mwm"]:
+            print("Skipping ", scraper.stem)
             continue
         if os.name == "posix" and scraper.name == "ai.py":
+            print("Skipping ", scraper.stem)
             continue
         print(f"Loading {scraper}")
         result = subprocess.run(["python", scraper])
