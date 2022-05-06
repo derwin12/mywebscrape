@@ -36,7 +36,7 @@ def get_products_from_page(
         if np:
             next_page = np.find_all("a")[-1]  # type: ignore
             if next_page:
-                response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+                response = httpx.get(next_page["href"], timeout=90.0)  # type: ignore
                 next_soup = BeautifulSoup(response.text, "html.parser")
                 sequences.extend(
                     get_products_from_page(soup=next_soup, url=url, vendor=vendor)
@@ -51,7 +51,11 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        try:
+            response = httpx.get(url.url, timeout=90.0)
+        except:
+            print("Exception error")
+            continue
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
