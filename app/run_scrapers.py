@@ -1,55 +1,23 @@
 import os
+import subprocess
+from pathlib import Path
 
 from my_funcs import update_vendor_counts
-from scrapers import *
 
 
 def main() -> None:
-    if os.name != "posix":
-        ai.main()
-    blinky.main()
-    bostik.main()
-    cfol.main()
-    clc.main()
-    east.main()
-    es.main()
-    fpd.main()
-    geaux_bright.main()
-    haus_of_holiday_lights.main()
-    hc.main()
-    hs.main()
-    inspire.main()
-    innovative.main()
-    jjs.main()
-    justrgb.main()
-    jl_pixel_sequences.main()
-    led.main()
-    lightem.main()
-    lights_on_mamie.main()
-    livermore.main()
-    ll.main()
-    lotn.main()
-    magical.main()
-  #  mwm.main()
-    og.main()
-    ppd.main()
-    pps.main()
-    psp.main()
-    rgbsequences.main()
-    sa.main()
-    sd.main()
-    sequence_solutions.main()
-    sequence_outlet.main()
-    showtime.main()
-    sl.main()
-    ss.main()
-    sol_sequences.main()
-    ssequence.main()
-    visionarylightshows.main()
-    vivid_sequences.main()
-    wls.main()
-    xl.main()
-    xtreme.main()
+
+    scrapers_path = Path.cwd() / "scrapers"
+    scrapers = sorted(scrapers_path.glob("*.py"))
+
+    for scraper in scrapers:
+        if scraper.stem == "__init__":
+            continue
+        if os.name != "posix" and scraper.name == "ai.py":
+            continue
+        print(f"Loading {scraper}")
+        result = subprocess.run(["python", scraper])
+        
     update_vendor_counts.main()
     print("Scraping complete.")
 
