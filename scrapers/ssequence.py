@@ -44,7 +44,7 @@ def get_products_from_page(
         if np:
             next_page = urljoin(url, np["href"])  # type: ignore
             print(f"Loading {next_page}")
-            response = httpx.get(next_page, timeout=30.0)  # type: ignore
+            response = httpx.get(next_page, timeout=90.0)  # type: ignore
             next_soup = BeautifulSoup(response.text, "html.parser")
             sequences.extend(
                 get_products_from_page(soup=next_soup, url=url, vendor=vendor)
@@ -59,7 +59,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = httpx.get(url.url, timeout=90.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
