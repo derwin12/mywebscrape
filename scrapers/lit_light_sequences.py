@@ -5,35 +5,31 @@ from app import Sequence, Vendor
 from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
-storename = "Haus of Holiday Lights"
+storename = "Lit Light Sequences"
+
+
+def get_minimum_price(price_soup: list[BeautifulSoup]) -> str:
+    price_strs = [x.text.strip() for x in price_soup]
+    price_floats = [
+        float(price_str.split()[0].replace("$", "").strip())
+        for price_str in price_strs
+        if "USD" in price_str
+    ]
+
+    return f"${min(price_floats):.2f}"
 
 
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-    products = soup.find_all(attrs={"data-hook": "product-list-grid-item"})
+    products = soup.find_all(class_="card-wrapper")
     sequences = []
     for product in products:
-        sequence_name = product.find(
-            attrs={"data-hook": "product-item-name"}
-        ).text.strip()
+        sequence_name = product.find(class_="full-unstyled-link").text.strip()
         product_url = urljoin(url, product.find("a")["href"])
-        price_soup = product.find_all(
-            attrs={
-                "data-hook": lambda p: p.startswith("product-item-price")
-                if p
-                else False
-            }
-        )
+        prices_soup = product.find_all(class_="price-item")
+        price = get_minimum_price(prices_soup)
 
-        price_floats = []
-        for p in price_soup:
-            price_str = p.text.strip().replace("$", "")
-            if not price_str:
-                continue
-            price_floats.append(float(price_str))
-
-        price = f"${min(price_floats):.2f}"
         if price == "$0.00":
             price = "Free"
 
