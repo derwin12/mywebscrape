@@ -77,15 +77,17 @@ def create_or_update_sequences(sequences: list[Sequence]) -> None:
                 f"[b]✓ {sequence.name}[/b] already exists with [b]{sequence.price}[/b].",
                 highlight=False,
             )
-            continue
+            curr.time_updated = func.now()
+            db.session.add(curr)
         else:
             console.print(
                 ":dollar:",
                 f"[b]{sequence.name}[/b] price has changed from [b]{curr.price}[/b] to [b]{sequence.price}[/b].",
                 highlight=False,
             )
-            sequence.time_price_changed = func.now()
+            curr.time_price_changed = func.now()
             curr.price = sequence.price
+            db.session.add(curr)
 
         db.session.commit()
 
