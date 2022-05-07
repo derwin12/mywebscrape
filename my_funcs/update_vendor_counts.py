@@ -8,7 +8,7 @@ def main() -> None:
     for vendor in Vendors:
         SeqCount = Sequence.query.filter(Sequence.vendor_id == vendor.id).count()
         print("Vendor %s has %s sequences" % (vendor.name, SeqCount))
-        stmt = update(Vendor, synchronize_session=False).where(Vendor.id == vendor.id).values(sequence_count=SeqCount)
+        stmt = update(Vendor).where(Vendor.id == vendor.id).values(sequence_count=SeqCount)
         db.session.execute(stmt)
 
     db.session.commit()
