@@ -31,7 +31,13 @@ FOLDER_IDS = [
     "14Liv1-p1CGj8hbJGEuhpceFUYkzRg0_X",
     "1HN8p8bcqkzCCfiON24gWOls_jXQyc9k5",
     "1nLv78PHAg_dWXaD4TsM9hRUawINhHlDS", # Halloween
-    "16yifVMESTYnXmGWXKyNB-dF8FO2qqEF9"  # Needs Review
+    "16yifVMESTYnXmGWXKyNB-dF8FO2qqEF9",  # Needs Review
+    "1bH7YAi-aN16oZd9FxfGRc2j9jPr1k0Lp", # XLATW
+    "1PwUXWD2SkFjAq5tgEM5I9eKuHkWJddqc",
+    "1kcFt-fbIaOvu9eRc7cuTrshLlmRlejBu",
+    "15O9WIiTHzv5RSCVDj7fysuH6exoamAf8",
+    "1Hd5N_KTcqu1EBnrMYj2fwdDWCTdwW0mH",
+    "1qRlqbUigsHTFOV3Ap8_2aFLWBk9J3QlC"
 ]
 
 
