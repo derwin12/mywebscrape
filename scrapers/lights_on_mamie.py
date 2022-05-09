@@ -17,6 +17,8 @@ def get_products_from_page(
     sequences = []
     for product in products:
         sequence_name = product.find(class_="grid-product__title").text.strip()
+        if 'MAGICOLOUR' in sequence_name:
+            continue
         product_url = urljoin(url, product.find(class_="grid-product__title")["href"])
         price = product.find(class_="grid-product__price-amount").text.strip()
         if price == "$0":
