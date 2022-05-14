@@ -32,18 +32,23 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('index')}}">Sequence Index</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('vendor_list')}}">Vendor List</a>
-            </li>
-            <li>
-                <a class="nav-link" href="#FAQModal" data-bs-toggle="modal" data-bs-target="#FAQModal">FAQ</a>
-            </li>
-        </ul>
-
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('vendor_list')}}">Vendor List</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="#FAQModal" data-bs-toggle="modal" data-bs-target="#FAQModal">FAQ</a>
+                </li>
+                <li>
+                    <a class="nav-link"
+                       href="https://docs.google.com/spreadsheets/d/e/2PACX-1vT9bgZn7byuoj_ixNdIx-2J5SqFdNeZP9NN0onCoWRJpK5fO-OMrozMoqDAMWIMkjKKUs4W0rY_lnor/pubhtml"
+                       target="_blank">Resources</a>
+                </li>
+            </ul>
+        </div>
         <div class="col-xs-2 col-xs-offset-1">
             <form class="d-flex" action="{{url_for('sequence')}}" method="post">
                 <div class="btn btn-outline-success">
@@ -54,11 +59,9 @@
                           <option value="uxsg" style="color: black;">Exc UXSG</option>
                     </select>
                 </div>
-
-
-            <input class="form-control me-2" name="search_string" type="text" placeholder="Search" value="{{ search_string}}" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit"><span class="bi-search"></span></button>
-        </form>
+                <input class="form-control me-2" name="search_string" type="text" placeholder="Search" value="{{ search_string}}" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit"><span class="bi-search"></span></button>
+            </form>
         </div>
 
     </div>
