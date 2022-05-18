@@ -22,7 +22,7 @@ def main() -> None:
     if os.name != 'posix':
         dir = os.getcwd() + "\\..\\app\\Data\\"
     else:
-        dir = os.getcwd() + "//..//app//Data//"
+        dir = os.getcwd() + "//app//Data//"
     wb = load_workbook(filename=dir + filename, data_only=True)
     sheet_obj = wb["Shares"]
     sequences = []
