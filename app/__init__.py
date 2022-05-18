@@ -226,11 +226,7 @@ def vendor_list():
         sequence_count = vendor.sequence_count
         vendorlist.append({"name": name, "url": url, "sequence_count": sequence_count})
 
-    return render_template(
-        "vendor_list.html",
-        title=f"Vendor List",
-        vendors=vendorlist,
-    )
+    return render_template("vendor_list.html", title="Vendor List", vendors=vendorlist)
 
 
 @auth.verify_password
