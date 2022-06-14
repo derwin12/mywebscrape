@@ -1,0 +1,52 @@
+from urllib.parse import urljoin
+
+import httpx
+from app import Sequence, Vendor
+from bs4 import BeautifulSoup
+from my_funcs import create_or_update_sequences, get_unique_vendor
+
+storename = "Pro Sequences"
+
+
+def get_products_from_page(
+    soup: BeautifulSoup, url: str, vendor: Vendor
+) -> list[Sequence]:
+    products = soup.find_all(class_="grid-product--dark")
+    sequences = []
+    for product in products:
+        sequence_name = product.find(class_="grid-product__shadow-inner").text.strip()
+        product_url = urljoin(url, product.find("a")["href"])
+        price_float = min(
+            float(x.text.strip().replace("$", "").replace("£", ""))
+            for x in product.find_all(class_="grid-product__price-value ec-price-item")
+        )
+        price = f"${price_float:.2f}"
+        if price == "$0.00":
+            price = "Free"
+
+        print(sequence_name, vendor.id, product_url, price)
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
+
+    return sequences
+
+
+def main() -> None:
+    print(f"Loading {storename}")
+    vendor = get_unique_vendor(storename)
+
+    for url in vendor.urls:
+        print(f"Loading {url.url}")
+        headers={"User-Agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}
+        response = httpx.get(url.url, timeout=30.0, headers=headers)
+        soup = BeautifulSoup(response.text, "html.parser")
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+
+        create_or_update_sequences(sequences)
+
+
+if __name__ == "__main__":
+    main()
