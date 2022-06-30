@@ -20,7 +20,11 @@ def get_products_from_page(
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
         product_url = urljoin(url, product["href"])
-        p = product.find("div", class_="product-card__price").text
+        try:
+            p = product.find("div", class_="product-card__price").text
+        except Exception:
+            print("No price - skipping", sequence_name)
+            continue
         pattern = r"[^0-9\.\$]+"
         price_text = re.sub(pattern, " ", p).strip()
         pattern = re.compile(r"(\$[0-9]+).*(\$[0-9]+)")
