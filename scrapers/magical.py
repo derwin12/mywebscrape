@@ -19,6 +19,9 @@ def get_products_from_page(
         s = product.find("div", class_="product-card__name").text.strip()
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
+        if 'plan members' in sequence_name.lower():
+            print('Skipping ', sequence_name)
+            continue
         product_url = urljoin(url, product["href"])
         try:
             p = product.find("div", class_="product-card__price").text
