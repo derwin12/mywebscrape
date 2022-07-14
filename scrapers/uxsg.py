@@ -9,7 +9,8 @@ storename = "UXSG"
 BASEURL = "https://www.facebook.com/groups/228562318717861/search/?q="
 
 #filename = "Unofficial xLights Sharing Group Shared Files List (31 Jan 2022).xlsx"
-filename = "Unofficial xLights Sharing Group Shared Files List (17 May 2022).xlsx"
+#filename = "Unofficial xLights Sharing Group Shared Files List (17 May 2022).xlsx"
+filename = "Unofficial xLights Sharing Group Shared Files List (14th July 2022).xlsx"
 name_column = 6
 artist_column = 7
 author_column = 9
@@ -27,7 +28,7 @@ def main() -> None:
     sheet_obj = wb["Shares"]
     sequences = []
 
-    for row in range(4, 1000):
+    for row in range(4, 1500):
         if (
             sheet_obj.cell(column=2, row=row).value
             and "_NA" not in sheet_obj.cell(column=name_column, row=row).value
