@@ -43,7 +43,7 @@ def main() -> None:
 
     for url in vendor.urls:
         # Using page saved since I was flagged as robot
-        response = httpx.get(url.url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=30.0)
+        response = httpx.get(url.url, headers={'User-Agent': 'Mozilla/6.0'}, timeout=30.0)
 
         print(f"Loading {url.url}")
         soup = BeautifulSoup(response, "html.parser")
