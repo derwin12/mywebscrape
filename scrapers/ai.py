@@ -1,3 +1,4 @@
+import httpx
 import re
 from urllib.parse import urljoin
 
@@ -42,9 +43,8 @@ def main() -> None:
 
     for url in vendor.urls:
         # Using page saved since I was flagged as robot
-        response = open(
-            "C:\\Users\\elcrapamundo\\PycharmProjects\\webscrape\\app\\Sample-Animated Illumination.html"
-        )
+        response = httpx.get(url.url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=30.0)
+
         print(f"Loading {url.url}")
         soup = BeautifulSoup(response, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
