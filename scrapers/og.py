@@ -13,8 +13,14 @@ def get_price_from_product_page(product_url: str) -> str:
     response = httpx.get(product_url, follow_redirects=True, timeout=30.0)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    prices = soup.find_all("meta", itemprop="price")
-    price = max(float(i["content"]) for i in prices)
+    p_str = soup.find_all(class_="edd_price_option_price")
+    prices = []
+    for i in p_str:
+        price = re.findall(r".*\$([0-9\.]+).*", i.text)
+        prices.append(float(price[0]))
+    if not prices:
+        prices = [0.0]
+    price = min(prices)
     return f"${price:.2f}"
 
 
