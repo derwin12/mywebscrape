@@ -18,6 +18,8 @@ def get_products_from_page(
         if 'pre-buy' in sequence_name.lower():
             continue
         product_url = urljoin(url, product.find("a")["href"])
+        if 'pre-buy' in product_url.lower():
+            continue
         price_float = min(
             float(x.text.strip().replace("$", ""))
             for x in product.find_all(class_="amount")
