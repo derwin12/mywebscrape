@@ -22,9 +22,14 @@ def get_products_from_page(
     for product in products:
         sequence_name = product.find(class_="product-card__name").text
         product_url = urljoin(BASEURL, product.find("a")["href"])
-        p_text = product.find("div", class_="product-card__price").text
-        pattern = re.compile(r".*(\$[0-9]+).*")
-        price = pattern.search(p_text)[1]  # type: ignore
+        p = product.find("div", class_="product-card__price").text
+        pattern = r"[^\$0-9\.]+"
+        price_text = re.sub(pattern, " ", p).strip()
+        pattern = re.compile(r"(\$[0-9]+).*(\$[0-9]+)")  # Look for second price
+        try:
+            price = pattern.search(price_text)[2]  # type: ignore
+        except Exception:
+            price = price_text
         if price == "$0":
             price = "Free"
         sequences.append(
