@@ -14,13 +14,17 @@ def get_price_from_product_page(product_url: str) -> str:
     soup = BeautifulSoup(response.text, "html.parser")
 
     p_str = soup.find_all(class_="edd_price_option_price")
-    prices = []
-    for i in p_str:
-        price = re.findall(r".*\$([0-9\.]+).*", i.text)
-        prices.append(float(price[0]))
-    if not prices:
-        prices = [0.0]
-    price = min(prices)
+    if p_str:
+        prices = []
+        for i in p_str:
+            price = re.findall(r".*\$([0-9\.]+).*", i.text)
+            prices.append(float(price[0]))
+        if not prices:
+            prices = [0.0]
+        price = min(prices)
+    else:
+        p_str = soup.find(class_="edd-add-to-cart-label")
+        price = float(re.findall(r".*\$([0-9\.]+).*", p_str.text)[0])
     return f"${price:.2f}"
 
 
