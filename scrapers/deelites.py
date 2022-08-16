@@ -18,7 +18,6 @@ def get_products_from_page(
     for product in products:
         sequence_name = product.find(class_="wt-text-caption").text.strip()
         product_url = urljoin(url, product.find("a")["href"].split("?")[0])
-        print('PRODUCT=', product.text)
         price = product.find(class_="currency-value").text
 
         sequences.append(
@@ -26,7 +25,6 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
-        break
 
     links = soup.select("a[role=link]")
     next_page_soup = [
