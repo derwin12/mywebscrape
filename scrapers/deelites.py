@@ -1,4 +1,3 @@
-import re
 from urllib.parse import urljoin
 
 import httpx
@@ -15,7 +14,7 @@ def get_products_from_page(
 
     products = soup.find_all("div", class_="v2-listing-card")
     sequences = []
-    pattern = r"[^A-Za-z0-9\-\'\.()&]+"
+
     for product in products:
         sequence_name = product.find(class_="wt-text-caption").text.strip()
         product_url = urljoin(url, product.find("a")["href"].split("?")[0])
@@ -26,6 +25,19 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
+
+    links = soup.select("a[role=link]")
+    next_page_soup = [
+        x
+        for x in links
+        if "wt-is-disabled" not in x.get("class") and "next" in x.text.lower()  # type: ignore
+    ]
+
+    if next_page_soup:
+        response = httpx.get(next_page_soup[0]["href"], timeout=30.0)  # type: ignore
+        next_soup = BeautifulSoup(response.text, "html.parser")
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+
     return sequences
 
 
