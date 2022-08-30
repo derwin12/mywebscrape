@@ -21,7 +21,7 @@ def get_products_from_page(
         )
         price_float = min(
             float(x.text.strip().replace("$", ""))
-            for x in product.find_all(class_="price-item")
+            for x in product.find_all("span", class_="price-item")
         )
         price = f"${price_float:.2f}"
         if price == "$0.00":
