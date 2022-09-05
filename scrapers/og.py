@@ -39,7 +39,6 @@ def get_products_from_page(
         sequence_name = product.text.replace("*", "").strip()
         product_url = product.find("a")["href"]
 
-        print("PROCESSING", product_url)
         if "ogsequences" not in product_url:
             try:
                 seq_num = re.search(".*p=(\d+).*", product_url)[1]  # type: ignore
@@ -49,7 +48,6 @@ def get_products_from_page(
             except:
                 print("Unable to process ", product_url)
                 continue
-        print("Continue with", product_url)
         # Price is on a secondary page.
         price = get_price_from_product_page(product_url)
         sequences.append(
