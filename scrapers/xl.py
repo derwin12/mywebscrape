@@ -19,14 +19,13 @@ def get_products_from_page(
     pattern = r"[^A-Za-z0-9\-\'\.()&]+"
     for product in products:
         category = product.find("a", class_="labelLink").text.lower()
-
         s = (
             product.find("div", class_="structItem-title")
             .find("a", attrs={"data-tp-primary": "on"})
             .text
         )
         sequence_name = re.sub(pattern, " ", s).strip()
-        if "vendor" in category:
+        if any(x in category for x in ["model", "vendor"]):
             print(f"Skipping ({category}) {sequence_name}")
             continue
         product_url = urljoin(
