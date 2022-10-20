@@ -1,0 +1,57 @@
+{% extends 'layoutsInitial.html' %}
+
+
+
+{% block content %}
+
+<div class="container">
+    <div class="container text-center">
+        <div class="card-body">
+            <h2 class="card-title">Welcome to the Sequence Index</h2>
+            <p class="card-text">We will help you find the sequence you are looking for.  You can search by entering the sequence or vendor name</p>
+            <p class="card-text">Vendor Count: <a href="{{ url_for('vendor_list')}}">{{ vendor_count }}</a> -- Sequence Count: {{ sequence_count }}</p>
+        </div>
+    </div>
+    <div class="container text-center">
+        <div class="card-body">
+            <h2 class="card-title">{{ title }}</h2>
+        </div>
+        <div>
+            <p class="card-text">Use Search in upper right to search the entire catalog</p>
+        </div>
+    </div>
+    <table class="table table-striped" id="data">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Store Name</th>
+            <th>Sequence</th>
+            <th>Price</th>
+            <th>First Seen</th>
+        </tr>
+        </thead>
+        {% for sequence in sequences %}
+            <tr>
+            {% if (today - sequence.time_created).days < 30 %}
+                <td><img src='/static/new.gif' width="25" height="18"></td>
+            {% else %}
+                <td>&nbsp;</td>
+            {% endif %}
+                <td>{{ sequence.vendor.name }}</td>
+                {% if (sequence.vendor.name == 'UXSG') %}
+                <td data-toggle="tooltip" data-placement="top" title="FB Group Members Only">
+                <a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
+                {% else %}
+                <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
+                {% endif %}
+                <td>{{ sequence.price }}</td>
+                <td>{{ sequence.time_created.date() }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+</div>
+
+
+{% endblock content %}
