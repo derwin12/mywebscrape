@@ -95,8 +95,9 @@ def index():
     sequence_count = Sequence.query.count()
 
     return render_template(
-        "sequence.html",
+        "mainpage.html",
         title="25 Latest Sequences",
+        tabtitle="Sequence Index",
         sequences=[normalize_price(x) for x in newest_25_sequences],
         vendor_count=vendor_count,
         sequence_count=sequence_count,

@@ -68,12 +68,14 @@
 
     </div>
     </nav>
+    <!-- dom commands: https://datatables.net/forums/discussion/comment/192528/#Comment_192528  removed length, summary, pagination -->
     <script type="text/javascript" class="init">
         $(document).ready(function() {
             $('#data').DataTable( {
                 "pageLength": 25,
-                "searching": true,
+                "searching": false,
                 "ordering": true,
+                "dom": "rt",
                 "oLanguage": {
                     "sSearch": "Filter:"
                 },
