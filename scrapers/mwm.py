@@ -1,23 +1,16 @@
-from dataclasses import dataclass
 import re
-import undetected_chromedriver as uc
+import os
 
 from bs4 import BeautifulSoup
 from app import Sequence, Vendor
 
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
-from app import BaseUrl, Vendor
-
-from selenium.webdriver.common.by import By
-from selenium import webdriver
-
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions
-
+from pathlib import Path
 
 storename = "Music with Motion"
+BASEURL = 'https://musicwithmotion.com/'
+FileDir = "\\MusicWithMotion"
 
 
 def get_products_from_page(
@@ -52,39 +45,16 @@ def main() -> None:
     print(f"Loading {storename}")
     vendor = get_unique_vendor(storename)
 
-    for url in vendor.urls:
-        print(f"Loading {url.url}")
+    htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
+    for p in Path(htmldir).glob('*.html'):
+        print(f"Loading %s" % (p.name.split('.')[0]))
+        with p.open() as f:
+            html = f.read()
 
-        options = webdriver.ChromeOptions()
-        options.headless = True
-        options.add_argument("start-maximized")
-        options.add_experimental_option("useAutomationExtension", False)
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        caps = options.to_capabilities()
-
-        driver = uc.Chrome(version_main=100, desired_capabilities=caps)
-        driver.get(url.url)
-        try:
-            WebDriverWait(driver, 15).until(
-                expected_conditions.presence_of_element_located(
-                    (By.CLASS_NAME, "product-details")
-                )
-            )
-        except TimeoutException:
-            print("Unable to load")
-            pass
-        html = driver.page_source
-        driver.close()
         soup = BeautifulSoup(html, "html.parser")
-        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+        sequences = get_products_from_page(soup=soup, url=BASEURL + "\\" + p.name, vendor=vendor)
 
-        # This should replace the for loop below
-        # create_or_update_sequences(sequences)
-        for sequence in sequences:
-            print(sequence)
-        #            #insert_sequence(store=storename, url=product.url, name=product.name, price=product.price)
-
-        break
+        create_or_update_sequences(sequences)
 
 
 if __name__ == "__main__":
