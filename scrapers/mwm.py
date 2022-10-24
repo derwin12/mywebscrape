@@ -45,7 +45,10 @@ def main() -> None:
     print(f"Loading {storename}")
     vendor = get_unique_vendor(storename)
 
-    htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
+    if os.name != 'posix':
+        htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
+    else:
+        htmldir = os.getcwd() + "//..//app//Data//" + FileDir
     for p in Path(htmldir).glob('*.html'):
         print(f"Loading %s" % (p.name.split('.')[0]))
         with p.open() as f:
