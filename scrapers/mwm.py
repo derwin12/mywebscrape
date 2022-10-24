@@ -10,7 +10,7 @@ from pathlib import Path
 
 storename = "Music with Motion"
 BASEURL = 'https://musicwithmotion.com/'
-FileDir = "\\MusicWithMotion"
+FileDir = "MusicWithMotion"
 
 
 def get_products_from_page(
@@ -48,7 +48,7 @@ def main() -> None:
     if os.name != 'posix':
         htmldir = os.getcwd() + "\\..\\app\\Data\\" + FileDir
     else:
-        htmldir = os.getcwd() + "//..//app//Data//" + FileDir
+        htmldir = os.getcwd() + "//app//Data//" + FileDir
     for p in Path(htmldir).glob('*.html'):
         print(f"Loading %s" % (p.name.split('.')[0]))
         with p.open() as f:
