@@ -23,13 +23,11 @@ def get_products_from_page(
         sequence_name = product.find("h4").text
         product_url = product.find("a")["href"]
         p = product.find("p", class_="price").text
+        # <p class="price">$35.00 <span class="price-tax">Ex Tax:$35.00</span>
         pattern = r"[^0-9\.\$]+"
-        price_text = re.sub(pattern, " ", p).strip()
-        pattern = re.compile(r"(\$[0-9]+).*(\$[0-9]+)")
-        try:
-            price = pattern.search(price_text)[22]  # type: ignore
-        except IndexError:
-            price = price_text
+        pt = re.sub(pattern, " ", p).strip()
+        price = pt.split(" ")[0].lstrip(' ')
+
         if price == "$0":
             price = "Free"
         sequences.append(
