@@ -1,0 +1,57 @@
+import httpx, re
+from app import Sequence, Vendor
+from bs4 import BeautifulSoup
+from my_funcs import create_or_update_sequences, get_unique_vendor
+
+storename = "EFL Sequences"
+
+
+def get_products_from_page(
+    soup: BeautifulSoup, url: str, vendor: Vendor
+) -> list[Sequence]:
+    products = soup.find_all(class_="product")
+    sequences = []
+    for product in products:
+        sequence_name = product.find(
+            class_="woocommerce-loop-product__title"
+        ).text.strip()
+        product_url = product.find("a", class_="woocommerce-LoopProduct-link")["href"]
+        try:
+            p = product.find(class_="price").text
+        except Exception:
+            print("No price - skipping", sequence_name)
+            continue
+        pattern = r"[\$^0-9\.[0-9]+]+"
+        price_text = re.sub(pattern, " ", p).strip()
+        pattern = re.compile(r"(\$[0-9]+\.[0-9]+)") #(\$[0-9]+).*(\$[0-9]+)")
+        try:
+            price = pattern.findall(price_text)[1]
+        except Exception:
+            price = pattern.findall(price_text)[0]
+        if price == "$0.00":
+            price = "Free"
+        print(sequence_name, price)
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
+
+    return sequences
+
+
+def main() -> None:
+    print(f"Loading {storename}")
+    vendor = get_unique_vendor(storename)
+
+    for url in vendor.urls:
+        print(f"Loading {url.url}")
+        response = httpx.get(url.url, timeout=30.0)
+        soup = BeautifulSoup(response.text, "html.parser")
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+
+        create_or_update_sequences(sequences)
+
+
+if __name__ == "__main__":
+    main()
