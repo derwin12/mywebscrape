@@ -13,22 +13,22 @@ def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
 
-    products = soup.find_all("div", class_="edd_download_inner")
+    products = soup.find_all(class_="grid__item")
+
     sequences = []
     pattern = r"[^A-Za-z0-9\-\'\.()&]+"
     for product in products:
-        s = product.find(class_="edd_download_title").text
+        try:
+            s = product.find(class_="card__heading h5").text
+        except:
+            continue
         sequence_name = re.sub(pattern, " ", s).strip()
         product_url = urljoin(url, product.find("a")["href"])
-        if product.find("div", class_="edd_price_options"):
-            p_text = product.find("div", class_="edd_price_options")
 
-            p_text2 = p_text.find("input")["data-price"]
-            price = p_text.find("input")["data-price"] if p_text2 else "-"
-        else:
-            p_text = product.find("a", class_="edd-add-to-cart")
-            price = p_text["data-price"] if p_text else "Free"
-
+        price_str = product.find(class_="price__sale").text.strip()
+        price = f'${price_str.rsplit("$")[-1].split(" ")[0]}'
+        if price == "$0.00":
+            price = "Free"
         sequences.append(
             Sequence(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
@@ -42,11 +42,10 @@ def main() -> None:
     vendor = get_unique_vendor(storename)
 
     for url in vendor.urls:
-        # Using page saved since I was flagged as robot
         response = httpx.get(url.url, headers={'User-Agent': 'Mozilla/6.0'}, timeout=30.0)
 
         print(f"Loading {url.url}")
-        soup = BeautifulSoup(response, "html.parser")
+        soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
         create_or_update_sequences(sequences)
