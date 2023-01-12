@@ -5,14 +5,14 @@ from datetime import datetime
 from urllib.parse import urlsplit
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for, send_from_directory
 from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime, and_, desc, exc, func, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
-app = Flask(__name__, instance_relative_config=True)
+app = Flask(__name__, instance_relative_config=True, static_folder='static')
 logging.basicConfig(
     filename="app.log",
     level=logging.WARN,
@@ -238,6 +238,10 @@ def vendor_list():
 
     return render_template("vendor_list.html", title="Vendor List", vendors=vendorlist)
 
+@app.route('/robots.txt')
+@app.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 @auth.verify_password
 def verify_password(username, password):
