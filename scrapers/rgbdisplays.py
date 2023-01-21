@@ -24,7 +24,7 @@ def get_products_from_page(
         price = prices[0] if len(prices) == 1 else str(min(x for x in prices))
         if "$" not in price:
             price = f"${price}"
-        if price == "$0":
+        if price == "$0.00":
             price = "Free"
         print(sequence_name, product_url, price)
         sequences.append(
