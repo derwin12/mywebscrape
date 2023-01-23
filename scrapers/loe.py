@@ -15,10 +15,11 @@ def get_products_from_page(
     sequences = []
     for product in products:
         sequence_name = product.find(class_="woocommerce-loop-product__title").text.strip()
-        if 'pre-buy' in sequence_name.lower():
+        if any(x in sequence_name.lower() for x in ["pre-buy", "custom"]):
+            print('Skip', sequence_name)
             continue
         product_url = urljoin(url, product.find("a")["href"])
-        if 'pre-buy' in product_url.lower():
+        if any(x in product_url.lower() for x in ["pre-buy", "custom"]):
             continue
         price_float = min(
             float(x.text.strip().replace("$", ""))
