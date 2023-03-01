@@ -30,8 +30,10 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
-    next_page = soup.find(class_="next")
-    if next_page:
+# #elPagination_b1ae5437920375879c1ec73544e75a71_1184440054 > li.ipsPagination_next
+    next_page_anchor = soup.find_all("li", class_="ipsPagination_next")
+    if next_page_anchor and not soup.find_all("li", class_="ipsPagination_next ipsPagination_inactive"):
+        next_page = soup.find("a", attrs={"rel":"next"})
         response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
