@@ -53,8 +53,8 @@ def main() -> None:
         print(f"Loading {url.url}")
         try:
             response = httpx.get(url.url, timeout=90.0)
-        except:
-            print("Exception error")
+        except (httpx.exceptions.TimeoutException, httpx.exceptions.RequestError) as e:
+            print(f"Error retrieving {url.url}: {e}")
             continue
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
