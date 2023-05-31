@@ -23,6 +23,8 @@ def get_products_from_page(
         price = product.find(
             attrs={"data-hook": "product-item-price-to-pay"}
         ).text.strip()
+        if price == "$0.00":
+            price = "Free"
         sequences.append(
             Sequence(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
