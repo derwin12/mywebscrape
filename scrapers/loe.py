@@ -12,7 +12,6 @@ def get_products_from_page(
         soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
     products = soup.find_all("li", class_="product")
-    print(">>>>", products)
     sequences = []
     for product in products:
         sequence_name = product.find(class_="woocommerce-loop-product__title").text.strip()
