@@ -11,7 +11,8 @@ storename = "LOE Sequences"
 def get_products_from_page(
         soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-    products = soup.find_all(class_="product")
+    products = soup.find_all("li", class_="product")
+    print(">>>>", products)
     sequences = []
     for product in products:
         sequence_name = product.find(class_="woocommerce-loop-product__title").text.strip()
@@ -35,6 +36,16 @@ def get_products_from_page(
             )
         )
 
+    next_tag = soup.find(class_="page-numbers")
+    if next_tag:
+        next_page = soup.find(class_="page-numbers").find(class_="next page-numbers")
+        if next_page:
+            response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+            next_soup = BeautifulSoup(response.text, "html.parser")
+            sequences.extend(
+                get_products_from_page(soup=next_soup, url=url, vendor=vendor)
+            )
+
     return sequences
 
 
@@ -44,7 +55,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = httpx.get(url.url, timeout=30.0, follow_redirects=True)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
