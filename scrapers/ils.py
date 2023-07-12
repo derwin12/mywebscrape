@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
 
-storename = "Jolly Jingle Sequences"
+storename = "Illusion Light Shows"
 page = 1
 
 
