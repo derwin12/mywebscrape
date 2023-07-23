@@ -54,3 +54,6 @@ Sample:
     INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
     INFO  [alembic.runtime.migration] Running upgrade 77fdfbc43629 -> f38b854cb661, Adding vendor count
 ```
+## Analytics
+Cloudflare dashboard provides data on hits and data transfers
+Google Analytics provides hits on outbound links
