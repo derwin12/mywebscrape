@@ -43,9 +43,9 @@
                 <td>{{ sequence.vendor.name }}</td>
                 {% if (sequence.vendor.name == 'UXSG') %}
                 <td data-toggle="tooltip" data-placement="top" title="FB Group Members Only">
-                <a href="{{ sequence.link }}" onclick="captureOutboundLink('{{ sequence.link }}'); return true;" target="_blank">{{ sequence.name }}</a></td>
+                <a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
                 {% else %}
-                <td><a href="{{ sequence.link }}" onclick="captureOutboundLink('{{ sequence.link }}'); return true;" target="_blank">{{ sequence.name }}</a></td>
+                <td><a href="{{ sequence.link }}" target="_blank">{{ sequence.name }}</a></td>
                 {% endif %}
                 <td>{{ sequence.price }}</td>
                 <td>{{ sequence.time_created.date() }}</td>
