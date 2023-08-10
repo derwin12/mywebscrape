@@ -42,7 +42,11 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
         url_link = file.find("img")
         if url_link:
             if file_name.endswith("zip") or file_name.endswith("piz"):
-                sequence_name = file_name
+#               remove "Compressed Archive: "
+                if file_name.startswith("Compressed Archive: "):
+                    sequence_name = file_name[19:]
+                else:
+                    sequence_name = file_name
                 product_url = url + "&" + \
                     urllib.parse.quote(file_name.split(".")[0])
                 price = "Free"
