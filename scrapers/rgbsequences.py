@@ -1,11 +1,11 @@
+import re
 from urllib.parse import urljoin
 
-import re
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "RGBSequences"
 
@@ -13,15 +13,16 @@ storename = "RGBSequences"
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-
-    products = soup.find_all("div", class_="grid__item small--one-half medium-up--one-fifth")
+    products = soup.find_all(
+        "div", class_="grid__item small--one-half medium-up--one-fifth"
+    )
     sequences = []
     for product in products:
         sequence_name = product.find(class_="product-card__name").text
         product_url = urljoin(url, product.find("a")["href"])
         price_str = product.find(class_="product-card__price")
         price = re.findall(r".*\$([0-9\.]+).*", price_str.text)[0]
-        if price == "$0.00" or price == "0":
+        if price in ["$0.00", "0"]:
             price = "Free"
         sequences.append(
             Sequence(
@@ -29,8 +30,7 @@ def get_products_from_page(
             )
         )
         print(sequence_name, product_url, price)
-    next_page = soup.find("span", class_="next")
-    if next_page:
+    if next_page := soup.find("span", class_="next"):
         next_url = urljoin(url, next_page.find("a")["href"])
         response = httpx.get(next_url, timeout=30.0)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")

@@ -1,22 +1,25 @@
 from urllib.parse import urljoin
 
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
+
+from app import Sequence, Vendor
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "LOE Sequences"
 
 
 def get_products_from_page(
-        soup: BeautifulSoup, url: str, vendor: Vendor
+    soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
     products = soup.find_all("li", class_="product")
     sequences = []
     for product in products:
-        sequence_name = product.find(class_="woocommerce-loop-product__title").text.strip()
+        sequence_name = product.find(
+            class_="woocommerce-loop-product__title"
+        ).text.strip()
         if any(x in sequence_name.lower() for x in ["pre-buy", "custom"]):
-            print('Skip', sequence_name)
+            print("Skip", sequence_name)
             continue
         product_url = urljoin(url, product.find("a")["href"])
         if any(x in product_url.lower() for x in ["pre-buy", "custom"]):
@@ -35,10 +38,10 @@ def get_products_from_page(
             )
         )
 
-    next_tag = soup.find(class_="page-numbers")
-    if next_tag:
-        next_page = soup.find(class_="page-numbers").find(class_="next page-numbers")
-        if next_page:
+    if next_tag := soup.find(class_="page-numbers"):
+        if next_page := soup.find(class_="page-numbers").find(
+            class_="next page-numbers"
+        ):
             response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
             next_soup = BeautifulSoup(response.text, "html.parser")
             sequences.extend(

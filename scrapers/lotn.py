@@ -2,10 +2,10 @@ import re
 from urllib.parse import urljoin
 
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Lights of the Night"
 
@@ -31,12 +31,9 @@ def get_products_from_page(
             )
         )
 
-    next_tag = soup.find("i", class_="fa fa-angle-right")
-    if next_tag:
-        np = soup.find("ul", class_="page-numbers")
-        if np:
-            next_page = np.find_all("a")[-1]  # type: ignore
-            if next_page:
+    if next_tag := soup.find("i", class_="fa fa-angle-right"):
+        if np := soup.find("ul", class_="page-numbers"):
+            if next_page := np.find_all("a")[-1]:
                 response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
                 next_soup = BeautifulSoup(response.text, "html.parser")
                 sequences.extend(
