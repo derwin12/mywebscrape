@@ -1049,11 +1049,11 @@
         },
         "jupyter-server": {
             "hashes": [
-                "sha256:59838bf20759354e2b4222fed702948a934cb21a503e21cd5b03706a456391d9",
-                "sha256:76b4ae0b568c331acc9aa904fc4a1194ef9bdefa69f232deb3f3cae802528c05"
+                "sha256:98a375347b580e837e7016007c24680a4261ed8ad7cd35196ac087d229f48e5a",
+                "sha256:d64fb4e593907290e5df916e3c9399c15ab2cd7bdb71cbcd1d36452dbfb30523"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==2.7.1"
+            "version": "==2.7.2"
         },
         "jupyter-server-terminals": {
             "hashes": [
