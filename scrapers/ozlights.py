@@ -1,10 +1,10 @@
 from urllib.parse import urljoin
 
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Oz Light Shows"
 
@@ -12,7 +12,6 @@ storename = "Oz Light Shows"
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-
     products = soup.find_all("li", class_="type-product")
     sequences = []
     for product in products:
@@ -28,13 +27,6 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
-
-#    next_page = soup.find(class_="next")
- #   if next_page:
-  #      response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
-   #     next_soup = BeautifulSoup(response.text, "html.parser")
-    #    sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
-
     return sequences
 
 

@@ -2,10 +2,10 @@ import re
 from urllib.parse import urljoin
 
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Magical Light Shows"
 
@@ -19,8 +19,8 @@ def get_products_from_page(
         s = product.find("div", class_="product-card__name").text.strip()
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
-        if 'plan members' in sequence_name.lower():
-            print('Skipping ', sequence_name)
+        if "plan members" in sequence_name.lower():
+            print("Skipping ", sequence_name)
             continue
         product_url = urljoin(url, product["href"])
         try:
@@ -43,10 +43,8 @@ def get_products_from_page(
             )
         )
 
-    next_tag = soup.find(class_="next")
-    if next_tag:
-        np = next_tag.find("a")
-        if np:
+    if next_tag := soup.find(class_="next"):
+        if np := next_tag.find("a"):
             next_page = urljoin(url, np["href"])  # type: ignore
             print("Goto", next_page)
             response = httpx.get(next_page, timeout=30.0)  # type: ignore

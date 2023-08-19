@@ -1,8 +1,8 @@
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Sequence Solutions"
 
@@ -10,7 +10,6 @@ storename = "Sequence Solutions"
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-
     products = soup.find_all("div", class_="edd_download item")
     sequences = []
     for product in products:
@@ -23,8 +22,7 @@ def get_products_from_page(
             )
         )
 
-    next_page = soup.find(class_="next")
-    if next_page:
+    if next_page := soup.find(class_="next"):
         response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))

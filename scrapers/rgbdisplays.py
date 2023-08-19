@@ -1,9 +1,10 @@
+import re
 from urllib.parse import urljoin
 
 import httpx
-import re
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
+
+from app import Sequence, Vendor
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
 # Might get the wrong country for pricing
@@ -13,7 +14,6 @@ storename = "RGB Displays"
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-
     products = soup.find_all("li", class_="grid__item")
     sequences = []
     for product in products:
@@ -21,7 +21,7 @@ def get_products_from_page(
         product_url = urljoin(url, product.find("a")["href"])
         p_str = product.find("div", class_="price__container").text.strip()
         prices = re.findall(r".*[\$£]([0-9\.]+).*", p_str)
-        price = prices[0] if len(prices) == 1 else str(min(x for x in prices))
+        price = prices[0] if len(prices) == 1 else str(min(prices))
         if "$" not in price:
             price = f"${price}"
         if price == "$0.00":
@@ -32,8 +32,7 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
-    next_page = soup.find(class_="next")
-    if next_page:
+    if next_page := soup.find(class_="next"):
         response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
