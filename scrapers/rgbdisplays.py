@@ -26,7 +26,6 @@ def get_products_from_page(
             price = f"${price}"
         if price == "$0.00":
             price = "Free"
-        print(sequence_name, product_url, price)
         sequences.append(
             Sequence(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
