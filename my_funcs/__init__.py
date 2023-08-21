@@ -70,7 +70,7 @@ def create_or_update_sequences(sequences: list[Sequence]) -> None:
     for sequence in sequences:
         curr = Sequence.query.filter_by(link=sequence.link).first()
         if not curr:
-            console.print(":new:", f"Adding [b]{sequence.name}[/b] to database.")
+            console.print(":new:", f"Adding [b]{sequence.name}[/b] at [b]{sequence.price}[/b] to database.")
             db.session.add(sequence)
         elif sequence.price == curr.price:
             console.print(
