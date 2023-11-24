@@ -32,6 +32,15 @@ def get_products_from_page(
             )
         )
 
+    if soup.find("button", {'data-hook': 'load-more-button'}):
+        if np := soup.find("ul", {'data-hook': 'product-list-pagination-seo'}):
+            if next_page := np.find_all("a")[-1]:
+                response = httpx.get(next_page["href"], timeout=90.0)  # type: ignore
+                next_soup = BeautifulSoup(response.text, "html.parser")
+                sequences.extend(
+                    get_products_from_page(soup=next_soup, url=url, vendor=vendor)
+                )
+
     return sequences
 
 
