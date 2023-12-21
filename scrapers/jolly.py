@@ -23,6 +23,8 @@ def get_products_from_page(
         s = product.find("h3").text.strip()
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
+        if any(x in sequence_name.lower() for x in ["price", "shipping", "bundle"]):
+            continue
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
         price_text = product.find(
