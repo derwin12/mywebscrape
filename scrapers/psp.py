@@ -18,7 +18,7 @@ def get_products_from_page(
     sequences = []
     for product in products:
         sequence_name = product.find("a", class_="full-unstyled-link").text.strip()
-        if any(x in sequence_name.lower() for x in ["group buy", "custom"]):
+        if any(x in sequence_name.lower() for x in ["group buy", "custom", "psp"]):
             continue
         product_url = urljoin(BASEURL, product.find("a")["href"])
         p = product.find("div", class_="price__sale").text
