@@ -39,9 +39,10 @@ def get_products_from_page(
 
     if next_page := soup.find("ul", "pagination__list list-unstyled"):
         if next_page_anchor := next_page.find_all("li")[-1].find("a"):
-            response = httpx.get(urljoin(BASEURL, next_page_anchor["href"]), timeout=30.0)  # type: ignore
-            next_soup = BeautifulSoup(response.text, "html.parser")
-            sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+            if next_page_anchor.has_attr("href"):
+                response = httpx.get(urljoin(BASEURL, next_page_anchor["href"]), timeout=30.0)  # type: ignore
+                next_soup = BeautifulSoup(response.text, "html.parser")
+                sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
     return sequences
 
