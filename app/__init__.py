@@ -97,15 +97,15 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
-    app.logger.info("Top 25")
-    newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(25)
+    app.logger.info("Top 50")
+    newest_50_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(50)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
     return render_template(
         "mainpage.html",
-        tabtitle="25 Latest Sequences",
-        sequences=[normalize_price(x) for x in newest_25_sequences],
+        tabtitle="50 Latest Sequences",
+        sequences=[normalize_price(x) for x in newest_50_sequences],
         vendor_count=vendor_count,
         sequence_count=sequence_count,
         today=datetime.now(),
