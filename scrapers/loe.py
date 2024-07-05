@@ -42,7 +42,9 @@ def get_products_from_page(
         if next_page := soup.find(class_="page-numbers").find(
             class_="next page-numbers"
         ):
-            response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+            pass
+            next_page_url = urljoin(url, next_page["href"])  # type: ignore
+            response = httpx.get(next_page_url, timeout=30.0, follow_redirects=True)  # type: ignore
             next_soup = BeautifulSoup(response.text, "html.parser")
             sequences.extend(
                 get_products_from_page(soup=next_soup, url=url, vendor=vendor)
