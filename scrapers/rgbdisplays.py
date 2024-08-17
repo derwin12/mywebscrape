@@ -31,8 +31,9 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
-    if next_page := soup.find(class_="next"):
-        response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+    if next_page := soup.find_all('a', class_='pagination__item-arrow', attrs={'aria-label': 'Next page'}):
+        last_href = next_page[-1].get('href')
+        response = httpx.get(urljoin(url,last_href), timeout=30.0)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
