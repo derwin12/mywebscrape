@@ -233,15 +233,16 @@ def vendor_list():
 
     # This extra logic is needed because some vendors don't have urls in the database.
     vendorlist = []
-    for vendor in vendorquery:
+    for v in vendorquery:
         try:
-            url = f"https://{urlsplit(vendor.urls[0].url).netloc}"
+            url = f"https://{urlsplit(v.urls[0].url).netloc}"
         except IndexError:
             url = ""
 
-        name = vendor.name
-        sequence_count = vendor.sequence_count
-        vendorlist.append({"name": name, "url": url, "sequence_count": sequence_count})
+        name = v.name
+        sequence_count = v.sequence_count
+        lastsequence = Sequence.query.with_entities(func.max(func.DATE(Sequence.time_created))).filter(Sequence.vendor_id == v.id).scalar()
+        vendorlist.append({"name": name, "url": url, "sequence_count": sequence_count, "lastsequence": lastsequence})
 
     return render_template(
         "vendor_list.html", tabtitle="Vendor List", vendors=vendorlist
