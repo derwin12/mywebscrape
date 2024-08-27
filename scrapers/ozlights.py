@@ -27,6 +27,16 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
+
+    if next_tag := soup.find(class_="page-numbers"):
+        if next_page := soup.find(class_="page-numbers").find(class_="next page-numbers"):
+            next_page_url = urljoin(url, next_page["href"])  # type: ignore
+            response = httpx.get(next_page_url, timeout=30.0, follow_redirects=True)  # type: ignore
+            next_soup = BeautifulSoup(response.text, "html.parser")
+            sequences.extend(
+                get_products_from_page(soup=next_soup, url=url, vendor=vendor)
+            )
+
     return sequences
 
 
