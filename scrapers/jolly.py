@@ -20,7 +20,7 @@ def get_products_from_page(
 
     sequences = []
     for product in products:
-        s = product.find("h3").text.strip()
+        s = product.find("p", attrs={'data-hook': 'product-item-name'}).text.strip()
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
         if any(x in sequence_name.lower() for x in ["price", "shipping", "bundle"]):
