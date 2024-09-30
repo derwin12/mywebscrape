@@ -97,15 +97,15 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route("/")
 def index():
-    app.logger.info("Top 25")
-    newest_25_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(25)
+    app.logger.info("Top 50")
+    newest_50_sequences = Sequence.query.order_by(desc(Sequence.time_created)).limit(50)
     vendor_count = Vendor.query.count()
     sequence_count = Sequence.query.count()
 
     return render_template(
         "mainpage.html",
-        tabtitle="25 Latest Sequences",
-        sequences=[normalize_price(x) for x in newest_25_sequences],
+        tabtitle="50 Latest Sequences",
+        sequences=[normalize_price(x) for x in newest_50_sequences],
         vendor_count=vendor_count,
         sequence_count=sequence_count,
         today=datetime.now(),
@@ -233,15 +233,16 @@ def vendor_list():
 
     # This extra logic is needed because some vendors don't have urls in the database.
     vendorlist = []
-    for vendor in vendorquery:
+    for v in vendorquery:
         try:
-            url = f"https://{urlsplit(vendor.urls[0].url).netloc}"
+            url = f"https://{urlsplit(v.urls[0].url).netloc}"
         except IndexError:
             url = ""
 
-        name = vendor.name
-        sequence_count = vendor.sequence_count
-        vendorlist.append({"name": name, "url": url, "sequence_count": sequence_count})
+        name = v.name
+        sequence_count = v.sequence_count
+        lastsequence = Sequence.query.with_entities(func.max(func.DATE(Sequence.time_created))).filter(Sequence.vendor_id == v.id).scalar()
+        vendorlist.append({"name": name, "url": url, "sequence_count": sequence_count, "lastsequence": lastsequence})
 
     return render_template(
         "vendor_list.html", tabtitle="Vendor List", vendors=vendorlist

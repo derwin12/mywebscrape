@@ -2,10 +2,10 @@ import re
 from urllib.parse import urljoin
 
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Around The World Sequences"
 
@@ -13,11 +13,8 @@ storename = "Around The World Sequences"
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-
-    products = soup.find_all(
-        "li", class_="grid__item"
-    )
-    #print(products);
+    products = soup.find_all("li", class_="grid__item")
+    # print(products);
 
     sequences = []
     for product in products:
@@ -25,7 +22,7 @@ def get_products_from_page(
         product_url = urljoin(url, product.find("a")["href"])
         p_str = product.find("div", class_="price__container").text.strip()
         prices = re.findall(r".*\$([0-9\.]+).*", p_str)
-        price = prices[0] if len(prices) == 1 else str(min(x for x in prices))
+        price = prices[0] if len(prices) == 1 else str(min(prices))
         if "$" not in price:
             price = f"${price}"
         if price == "$0.00":
@@ -36,7 +33,9 @@ def get_products_from_page(
             )
         )
 
-    if next_page := soup.find(class_="pagination__item pagination__item--prev pagination__item-arrow link motion-reduce"):
+    if next_page := soup.find(
+        class_="pagination__item pagination__item--prev pagination__item-arrow link motion-reduce"
+    ):
         next_page_url = urljoin(url, next_page["href"])  # type: ignore
 
         response = httpx.get(next_page_url, timeout=30.0)

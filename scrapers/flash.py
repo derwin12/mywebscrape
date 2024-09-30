@@ -1,35 +1,24 @@
-import re
-
 import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
-
-storename = "Charlees Props"
+storename = "Flash The Neighbors"
 
 
 def get_products_from_page(
-    soup: BeautifulSoup, url: str, vendor: Vendor
+    soup: BeautifulSoup, vendor: Vendor
 ) -> list[Sequence]:
-    products = soup.find("table").find_all("tr")[1:]
-
+    products = soup.find_all(class_="grid-product")
     sequences = []
-    for row in products:
-        sequence_name = row.find_all('td')[0].text.strip()
-
-        pattern = r'^(.*?)\([^)]*\)'  # Skip the notes
-        match = re.search(pattern, sequence_name)
-        if match:
-            sequence_name = match.group(1).strip()
-
-        a_element = row.find_all('td')[1].find("a")
-        if a_element:
-            product_url = a_element['href']
-        else:
-            continue
-        price = "Free"
-        print(sequence_name, ", URL", product_url)
+    for product in products:
+        sequence_name = product.find(
+            class_="grid-product__title-inner"
+        ).text.strip()
+        product_url = product.find("a", class_="grid-product__title")["href"]
+        price = product.find(class_="grid-product__price-value").text.strip()
+        if price == "$0.00":
+            price = "Free"
         sequences.append(
             Sequence(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
@@ -47,7 +36,7 @@ def main() -> None:
         print(f"Loading {url.url}")
         response = httpx.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
-        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+        sequences = get_products_from_page(soup=soup, vendor=vendor)
 
         create_or_update_sequences(sequences)
 

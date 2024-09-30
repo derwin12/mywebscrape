@@ -1,5 +1,9 @@
 import re
+from urllib.parse import urljoin
+
 import cfscrape
+import httpx
+
 
 from bs4 import BeautifulSoup
 from app import Sequence, Vendor
@@ -35,6 +39,18 @@ def get_products_from_page(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
+
+    pagination_div = soup.find('div', class_='pagination-wrapper')
+    if pagination_div:
+        active_li = pagination_div.find('li', class_='active')
+        if active_li:
+            next_li = active_li.find_next_sibling('li')
+            if next_li:
+                next_link = next_li.find('a')
+                print('Processing next page: ' + next_link['href'])
+                response = httpx.get(next_link['href'], timeout=30.0)  # type: ignore
+                next_soup = BeautifulSoup(response.text, "html.parser")
+                sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
     return sequences
 

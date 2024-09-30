@@ -32,29 +32,34 @@ def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
 
-    products = soup.find_all("div", class_="elementor-image")
+    products = soup.find_all("div", class_="elementor-widget-container")
 
     sequences = []
     for product in products:
-        sequence_name = product.text.replace("*", "").strip()
-        product_url = product.find("a")["href"]
+        if product.find("a"):
+            sequence_name = product.text.replace("*", "").strip()
+            product_url = product.find("a")["href"]
 
-        if "ogsequences" not in product_url:
-            try:
-                seq_num = re.search(".*p=(\d+).*", product_url)[1]  # type: ignore
-                product_url = (
+            if "ogsequences" not in product_url:
+                try:
+                    seq_num = re.search(".*p=(\d+).*", product_url)[1]  # type: ignore
+                    product_url = (
                     f"http://ogsequences.com/?post_type=download&p={seq_num}&preview=true"
-                )
-            except:
-                print("Unable to process ", product_url)
-                continue
+                    )
+                except:
+                    print("Unable to process ", product_url)
+                    continue
         # Price is on a secondary page.
-        price = get_price_from_product_page(product_url)
-        sequences.append(
-            Sequence(
-                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            try:
+                price = get_price_from_product_page(product_url)
+            except:
+                price = "Unknown"
+                print("Unable to get price for ", product_url)
+            sequences.append(
+                Sequence(
+                    name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+                )
             )
-        )
 
     next_page = soup.find(class_="next")
     if next_page:

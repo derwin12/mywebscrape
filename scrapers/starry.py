@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from app import Sequence, Vendor
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
-storename = "LOE Sequences"
+storename = "Starry Night Display"
 
 
 def get_products_from_page(
@@ -15,9 +15,7 @@ def get_products_from_page(
     products = soup.find_all("li", class_="product")
     sequences = []
     for product in products:
-        sequence_name = product.find(
-            class_="woocommerce-loop-product__title"
-        ).text.strip()
+        sequence_name = product.find("h3").text.strip()
         if any(x in sequence_name.lower() for x in ["pre-buy", "custom"]):
             print("Skip", sequence_name)
             continue

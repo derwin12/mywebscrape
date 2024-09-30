@@ -2,10 +2,10 @@ import re
 from urllib.parse import urljoin
 
 import httpx
-from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
 
+from app import Sequence, Vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Pixel Sequence Pros"
 BASEURL = "https://pixelsequencepros.com/"
@@ -14,12 +14,11 @@ BASEURL = "https://pixelsequencepros.com/"
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-
     products = soup.find_all("li", class_="grid__item")
     sequences = []
     for product in products:
         sequence_name = product.find("a", class_="full-unstyled-link").text.strip()
-        if any(x in sequence_name.lower() for x in ["group buy", "custom"]):
+        if any(x in sequence_name.lower() for x in ["group buy", "custom", "psp"]):
             continue
         product_url = urljoin(BASEURL, product.find("a")["href"])
         p = product.find("div", class_="price__sale").text
@@ -38,11 +37,12 @@ def get_products_from_page(
             )
         )
 
-    next_page = soup.find("ul", "pagination__list list-unstyled").find_all("li")[-1].find("a")  # type: ignore
-    if next_page:
-        response = httpx.get(urljoin(url, next_page["href"]), timeout=30.0)  # type: ignore
-        next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+    if next_page := soup.find("ul", "pagination__list list-unstyled"):
+        if next_page_anchor := next_page.find_all("li")[-1].find("a"):
+            if next_page_anchor.has_attr("href"):
+                response = httpx.get(urljoin(BASEURL, next_page_anchor["href"]), timeout=30.0)  # type: ignore
+                next_soup = BeautifulSoup(response.text, "html.parser")
+                sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
     return sequences
 
