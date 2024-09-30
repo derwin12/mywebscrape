@@ -3,8 +3,8 @@ httpx~=0.24.1
 python-dotenv==1.0.0
 getfilelistpy~=1.0.7
 Flask==2.3.2
-google-api-python-client==2.88.0
 SQLAlchemy==1.4.36
+google-api-python-client==2.88.0
 #chromedriver-py~=108.0.5359.71
 chromedriver-py~=100.0.4896.60
 selenium==4.1.3
