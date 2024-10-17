@@ -41,7 +41,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str) -> list[Sequence]:
 
         url_link = file.find("img")
         if url_link:
-            if file_name.endswith("zip") or file_name.endswith("piz"):
+            if file_name.endswith("zip") or file_name.endswith("piz") or file_name.endswith("xsqz"):
 #               remove "Compressed Archive: "
                 if file_name.startswith("Compressed Archive: "):
                     sequence_name = file_name[19:]
