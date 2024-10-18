@@ -55,7 +55,7 @@ def main() -> None:
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
-        #create_or_update_sequences(sequences)
+        create_or_update_sequences(sequences)
 
 
 if __name__ == "__main__":
