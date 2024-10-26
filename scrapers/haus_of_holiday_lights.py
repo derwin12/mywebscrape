@@ -33,7 +33,11 @@ def get_products_from_page(
                 continue
             price_floats.append(float(price_str))
 
-        price = f"${min(price_floats):.2f}"
+        if not price_floats:
+            price = "Unknown"
+        else:
+            price = f"${min(price_floats):.2f}"
+
         if price == "$0.00":
             price = "Free"
 
