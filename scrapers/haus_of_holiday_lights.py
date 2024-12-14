@@ -28,10 +28,11 @@ def get_products_from_page(
 
         price_floats = []
         for p in price_soup:
-            price_str = p.text.strip().replace("$", "")
+            price_str = p.text.strip().replace("$", "").replace(",","")
             if not price_str:
                 continue
             price_floats.append(float(price_str))
+
 
         if not price_floats:
             price = "Unknown"
@@ -40,6 +41,8 @@ def get_products_from_page(
 
         if price == "$0.00":
             price = "Free"
+        if float(min(price_floats)) > 100.0:
+            continue
 
         sequences.append(
             Sequence(
