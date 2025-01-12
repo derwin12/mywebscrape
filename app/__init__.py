@@ -188,23 +188,6 @@ def sequence():
                 Vendor.name.contains(search_string),
             ),
         )
-    elif search_type == "uxsg":
-        sequence_search_result = Sequence.query.join(Vendor).filter(
-            and_(Vendor.name != "UXSG"),
-            or_(
-                Sequence.name.contains(search_string),
-                Vendor.name.contains(search_string),
-            ),
-        )
-    elif search_type == "freeuxsg":
-        sequence_search_result = Sequence.query.join(Vendor).filter(
-            and_(Vendor.name != "UXSG"),
-            and_(Sequence.price == "Free"),
-            or_(
-                Sequence.name.contains(search_string),
-                Vendor.name.contains(search_string),
-            ),
-        )
     else:
         sequence_search_result = Sequence.query.join(Vendor).filter(
             or_(
