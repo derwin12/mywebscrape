@@ -22,6 +22,9 @@ def get_products_from_page(
         if "plan members" in sequence_name.lower():
             print("Skipping ", sequence_name)
             continue
+        if "laser" in sequence_name.lower():
+            print("Skipping ", sequence_name)
+            continue
         product_url = urljoin(url, product["href"])
         try:
             p = product.find("div", class_="product-card__price").text
