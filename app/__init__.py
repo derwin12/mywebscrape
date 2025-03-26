@@ -208,6 +208,12 @@ def sequence():
         search_string=search_string,
     )
 
+@app.route("/buynsell", methods=["GET"])
+def buynsell():
+    app.logger.info("Buy and Sell")
+    return render_template('buynsell.html', message="Welcome to Buy and Sell!")
+
+
 
 @app.route("/vendor-list", methods=["GET"])
 def vendor_list():
