@@ -1,4 +1,4 @@
-# run.py
+# app.py
 
 from app import app
 
