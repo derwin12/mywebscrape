@@ -18,10 +18,13 @@ def get_products_from_page(
         sequence_name = product.find("h2", class_='woocommerce-loop-product__title').text
         product_url = urljoin(url, product.find("a")["href"])
 
-        price_string = product.find(class_="woocommerce-Price-amount").text.strip()
-
-        match = re.search(r"\$\d+\.\d{2}", price_string)
-        price = match.group()
+        price_element = product.find(class_="woocommerce-Price-amount")
+        if price_element:
+            price_string = price_element.text.strip()
+            match = re.search(r"\$\d+\.\d{2}", price_string)
+            price = match.group()
+        else:
+            price = "Free"
 
         if price == "$0.00":
             price = "Free"
@@ -37,11 +40,14 @@ def get_products_from_page(
     if next_page:
         print(f'Loading {urljoin(url, next_page["href"])}')  # type: ignore
         try:
-            response = httpx.get(next_page["href"], timeout=90.0)  # type: ignore
-            next_soup = BeautifulSoup(response.text, "html.parser")
-            sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+            response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
         except Exception as e:
-            print(f"Timed out. Lets just continue on")
+            print(f"Failed to fetch page: {e}. Skipping to next page.")
+            return sequences
+
+        next_soup = BeautifulSoup(response.text, "html.parser")
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+
 
     return sequences
 
@@ -52,7 +58,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=90.0)
+        response = httpx.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
