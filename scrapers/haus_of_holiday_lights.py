@@ -50,6 +50,13 @@ def get_products_from_page(
             )
         )
 
+    next_page = soup.find("link", attrs={"rel": "next"})
+    if next_page:
+        print(f'Loading {urljoin(url, next_page["href"])}')  # type: ignore
+        response = httpx.get(urljoin(url, next_page["href"]), timeout=30.0)  # type: ignore
+        next_soup = BeautifulSoup(response.text, "html.parser")
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+
     return sequences
 
 
