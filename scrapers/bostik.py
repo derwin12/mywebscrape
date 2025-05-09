@@ -27,7 +27,6 @@ def get_products_from_page(
         sequence_name = link_tag.text.strip()
         if any(x in sequence_name.lower() for x in ["rgb sequence", "services", "voice over"]):
             continue
-        print(sequence_name)
         product_url = urljoin(url, link_tag["href"])
 
         # Extract price
