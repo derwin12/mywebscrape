@@ -3,22 +3,22 @@ import os
 import time
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
+
 from app import Sequence, Vendor
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
-try:
+if os.name != "posix":
+    import selenium.webdriver.chrome.service as Service
     from chromedriver_py import binary_path
-except ImportError:
-    binary_path = None
-
-CHROMEDRIVER_PATH = None  # e.g., "C:\\WebDrivers\\chromedriver.exe"
+else:
+    from selenium.webdriver.chrome.service import Service
 
 storename = "Magical Light Shows"
 max_scrolls = 10
@@ -78,15 +78,6 @@ def load_dynamic_page(url: str) -> BeautifulSoup:
 
     driver = None
     try:
-#        if os.name != "posix" and binary_path:
-#            service = Service(binary_path)
-#            driver = webdriver.Chrome(service=service, options=options)
-#        elif CHROMEDRIVER_PATH:
-#            service = Service(CHROMEDRIVER_PATH)
-#           driver = webdriver.Chrome(service=service, options=options)
-#        else:
-#            raise Exception("No valid ChromeDriver path provided. Install chromedriver-py or set CHROMEDRIVER_PATH.")
-
         options = Options()
         options.add_argument("--headless=new")  # Use modern headless mode
         options.add_argument("--no-sandbox")
@@ -95,11 +86,12 @@ def load_dynamic_page(url: str) -> BeautifulSoup:
         options.add_argument("--window-size=1920,1080")
 
         if os.name != "posix":
-            service = Service(binary_path)
+            service = Service.Service(binary_path)
             driver = webdriver.Chrome(service=service, options=options)
         else:
-            service = Service("/usr/bin/chromedriver")
-            driver = webdriver.Chrome(service=service, options=options)
+            driver = webdriver.Chrome(
+                service=Service("/usr/bin/chromedriver"), options=options
+            )
 
         driver.get(url)
         try:
