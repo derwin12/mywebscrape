@@ -40,7 +40,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str, vendor: Vendor) -> lis
         sequence_name = re.sub(r"[^A-Za-z0-9\-\'\.()&]+", " ", title_tag.text.strip())
         product_url = urljoin(url, title_tag["href"])
 
-        if "plan members" in sequence_name.lower() or "laser" in sequence_name.lower():
+        if "plan members" in sequence_name.lower() or "laser" in sequence_name.lower() or "membership" in sequence_name.lower():
             continue
 
         price_div = product.find("div", class_=re.compile(r"price(\sprice--on-sale)?"))
