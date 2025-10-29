@@ -25,8 +25,11 @@ def get_products_from_page(
             .text
         )
         sequence_name = re.sub(pattern, " ", s).strip()
-        if any(x in category for x in ["model", "vendor", "delete", "Delete"]):
+        if any(x in category.lower() for x in ["model", "vendor"]):
             print(f"Skipping ({category}) {sequence_name}")
+            continue
+        if any(x in sequence_name.lower() for x in ["delete"]):
+            print(f"Skipping {sequence_name}")
             continue
         product_url = urljoin(
             url,
