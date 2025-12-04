@@ -25,6 +25,8 @@ def get_products_from_page(
             .text
         )
         sequence_name = re.sub(pattern, " ", s).strip()
+        if sequence_name == "Thunderstruck - AC DC":
+            print(f"Testing")
         if any(x in category.lower() for x in ["model", "vendor"]):
             print(f"Skipping ({category}) {sequence_name}")
             continue
@@ -38,6 +40,10 @@ def get_products_from_page(
             )["href"],
         )
         price_text = product.find("span", class_="label--primary")
+        username = product.find('a', class_='username').text.strip()
+        if username == "lightlink":
+            print(f"Skipping {username} {sequence_name}")
+            continue
         price = price_text.text if price_text else "Free"
         if price == "0.00":
             price = "Free"
