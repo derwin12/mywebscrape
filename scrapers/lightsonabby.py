@@ -16,7 +16,7 @@ def get_products_from_page(
     products = soup.find_all("li", attrs={"data-hook": "product-list-grid-item"})
     sequences = []
     for product in products:
-        s = product.find("h3").text.strip()
+        s = product.find("p", attrs={"data-hook":"product-item-name"}).text.strip()
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
         # song, artist = sequence_name.split(" - ")

@@ -20,18 +20,23 @@ def get_products_from_page(
 
     sequences = []
     for product in products:
-        s = product.find("h3").text.strip()
+        s = product.find("p", attrs={'data-hook': 'product-item-name'}).text.strip()
         pattern = r"[^A-Za-z0-9\-\'\.()&]+"
         sequence_name = re.sub(pattern, " ", s).strip()
-        if any(x in sequence_name.lower() for x in ["price", "shipping", "bundle"]):
+        if any(x in sequence_name.lower() for x in ["price", "shipping", "bundle", "xconnect", "wreath"]):
             continue
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(url, product.find("a")["href"])
-        price_text = product.find(
+        price_text = ""
+        p = product.find(
             "span", attrs={"data-hook": "product-item-price-to-pay"}
-        ).text
-        pattern = re.compile(r"(\$\d[\d,.]*)")
-        price = pattern.search(price_text)[1]  # type: ignore
+        )
+        if p:
+            price_text = p.text
+            pattern = re.compile(r"(\$\d[\d,.]*)")
+            price = pattern.search(price_text)[1]  # type: ignore
+        else:
+            price = "Free"
         sequences.append(
             Sequence(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price

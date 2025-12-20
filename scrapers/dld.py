@@ -16,7 +16,7 @@ def get_products_from_page(
     sequences = []
 
     for product in products:
-        sequence_name = product.find("h3").text.strip()
+        sequence_name = product.find("p", attrs={'data-hook': 'product-item-name'}).text.strip()
         product_url = urljoin(url, product.find("a")["href"].split("?")[0])
         span_element = product.find('span', attrs={'data-hook': 'product-item-price-to-pay'})
         price = span_element.text

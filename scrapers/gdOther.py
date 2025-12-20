@@ -25,19 +25,21 @@ items = []
 pageToken = ""
 
 FOLDER_IDS = [
-    "12fXAtkhD1UQEjRZWPE9U41pa3IWdkZ0n",
-    "1Pv7BKMiYU7qAoSFhrRbigYtdG-gm-wXs",
-    "1s79C7ZNquiIEgL_A4oxPHiaipXDRlXxC",
-    "14Liv1-p1CGj8hbJGEuhpceFUYkzRg0_X",
-    "1HN8p8bcqkzCCfiON24gWOls_jXQyc9k5",
-    "1nLv78PHAg_dWXaD4TsM9hRUawINhHlDS", # Halloween
-    "16yifVMESTYnXmGWXKyNB-dF8FO2qqEF9",  # Needs Review
-    "1bH7YAi-aN16oZd9FxfGRc2j9jPr1k0Lp", # XLATW
-    "1PwUXWD2SkFjAq5tgEM5I9eKuHkWJddqc",
-    "1kcFt-fbIaOvu9eRc7cuTrshLlmRlejBu",
-    "15O9WIiTHzv5RSCVDj7fysuH6exoamAf8",
-    "1Hd5N_KTcqu1EBnrMYj2fwdDWCTdwW0mH",
-    "1qRlqbUigsHTFOV3Ap8_2aFLWBk9J3QlC"
+   # "12fXAtkhD1UQEjRZWPE9U41pa3IWdkZ0n", # Funny
+   # "1Pv7BKMiYU7qAoSFhrRbigYtdG-gm-wXs", # intros
+   # "1s79C7ZNquiIEgL_A4oxPHiaipXDRlXxC", # kids
+   # "14Liv1-p1CGj8hbJGEuhpceFUYkzRg0_X", # other
+   # "1HN8p8bcqkzCCfiON24gWOls_jXQyc9k5", # patriotic
+   # "1nLv78PHAg_dWXaD4TsM9hRUawINhHlDS", # Halloween
+   # "16yifVMESTYnXmGWXKyNB-dF8FO2qqEF9", # Needs Review
+   # "1bH7YAi-aN16oZd9FxfGRc2j9jPr1k0Lp", # XLATW
+   # "1PwUXWD2SkFjAq5tgEM5I9eKuHkWJddqc", # 2020 Halloween
+   # "1kcFt-fbIaOvu9eRc7cuTrshLlmRlejBu", # 2021 Halloween
+   # "15O9WIiTHzv5RSCVDj7fysuH6exoamAf8", #xlatw
+   # "1Hd5N_KTcqu1EBnrMYj2fwdDWCTdwW0mH", #xlatw
+   # "1qRlqbUigsHTFOV3Ap8_2aFLWBk9J3QlC", #xlatw
+    "1W2RMs15oHzP4a6O0f1d-Gyu1yn6ypmMB", #Christmas Older
+    "1qSwKT4ooVnflY-_HAogZmibl787PO3Af" # Christmas
 ]
 
 

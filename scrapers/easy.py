@@ -4,31 +4,50 @@ import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
+import re
 
-storename = "JL Pixel Sequences"
+storename = "Easy xLights Sequences"
 
 
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-    products = soup.find_all("div", class_="card-wrapper")
+    products = soup.find_all('li', class_='ast-grid-common-col')
     sequences = []
     for product in products:
-        sequence_name = product.find(class_="card__heading").text.strip()
+        sequence_name = product.find("h2", class_='woocommerce-loop-product__title').text
         product_url = urljoin(url, product.find("a")["href"])
-        price_str = product.find(class_="price__sale").text.strip()
-        price = f'${price_str.rsplit("$")[-1].split(" ")[0]}'
+
+        price_element = product.find(class_="woocommerce-Price-amount")
+        if price_element:
+            price_string = price_element.text.strip()
+            match = re.search(r"\$\d+\.\d{2}", price_string)
+            price = match.group()
+        else:
+            price = "Free"
+
         if price == "$0.00":
             price = "Free"
+
+        print(product_url, price)
         sequences.append(
             Sequence(
                 name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
             )
         )
-    if next_page := soup.find(class_="next"):
-        response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+
+    next_page = soup.find(class_="next")
+    if next_page:
+        print(f'Loading {urljoin(url, next_page["href"])}')  # type: ignore
+        try:
+            response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+        except Exception as e:
+            print(f"Failed to fetch page: {e}. Skipping to next page.")
+            return sequences
+
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+
 
     return sequences
 

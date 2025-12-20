@@ -20,54 +20,45 @@ if os.name != "posix":
 else:
     from selenium.webdriver.chrome.service import Service
 
-storename = "Magical Light Shows"
-max_scrolls = 10
+storename = "EZRGB"
+max_scrolls = 2
 
 
-def get_products_from_page(soup: BeautifulSoup, url: str, vendor: Vendor) -> list[Sequence]:
-    products = soup.find_all("div", class_="card product-card product-card--card flex flex-col leading-none relative")
+def get_products_from_page(
+    soup: BeautifulSoup, url: str, vendor: Vendor
+) -> list[Sequence]:
+
+    products = soup.find_all("div", class_=re.compile(r"card\s+glass"))
+    #soup.find_all("div", class_="card-body flex flex-col justify-between items-center text-center flex-grow")
     print(f"Found {len(products)} products")
     sequences = []
-
+    pattern = r"[^A-Za-z0-9\-\'\.()&]+"
     for product in products:
-        content_div = product.find("div", class_="product-card__content")
-        if not content_div:
-            continue
+        s = product.find("h2", class_="card-title").text.strip()
+        s2 = re.sub(pattern, " ", s).strip()
+        sequence_name = re.sub(r'\(.*?\)', '', s2).strip()
+        # song, artist = sequence_name.split(" - ")
+        product_url = urljoin(url, product.find("a")["href"])
+        price_tag = product.find("p", class_=lambda x: x and "font-semibold" in x)
+        price = price_tag.get_text(strip=True) if price_tag else "Uknown"
 
-        title_tag = content_div.find("a", class_="product-card__title")
-        if not title_tag:
-            continue
-        sequence_name = re.sub(r"[^A-Za-z0-9\-\'\.()&]+", " ", title_tag.text.strip())
-        product_url = urljoin(url, title_tag["href"])
-
-        if "plan members" in sequence_name.lower() or "laser" in sequence_name.lower() or "membership" in sequence_name.lower():
-            continue
-
-        price_div = product.find("div", class_=re.compile(r"price(\sprice--on-sale)?"))
-        if not price_div:
-            continue
-
-        sale_price_tag = price_div.find("span", class_="price__regular")
-        regular_price_tag = price_div.find("span", class_="price__sale")
-
-        price = sale_price_tag.text.strip() if sale_price_tag else regular_price_tag.text.strip() if regular_price_tag else None
-        if not price:
-            continue
-
-        match = re.search(r"\$([\d.]+)", price)
-        if match:
-            price = f"${match.group(1)}"
-        else:
-            continue
-
+        #print(sequence_name, product_url, price)
         if price == "$0.00":
             price = "Free"
+        sequences.append(
+            Sequence(
+                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+            )
+        )
 
-        sequences.append(Sequence(name=sequence_name, vendor_id=vendor.id, link=product_url, price=price))
-        print(f"Added sequence: {sequence_name}, Price: {price}, URL: {product_url}")
+    next_page = soup.find("link", attrs={"rel": "next"})
+    if next_page:
+        print(f'Loading {urljoin(url, next_page["href"])}')  # type: ignore
+        response = httpx.get(urljoin(url, next_page["href"]), timeout=30.0)  # type: ignore
+        next_soup = BeautifulSoup(response.text, "html.parser")
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
     return sequences
-
 
 def load_dynamic_page(url: str) -> BeautifulSoup:
     options = Options()
@@ -96,7 +87,7 @@ def load_dynamic_page(url: str) -> BeautifulSoup:
         driver.get(url)
         try:
             WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "product-card__title"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".card.glass"))
             )
             print("Initial page loaded")
         except TimeoutException:
@@ -114,7 +105,8 @@ def load_dynamic_page(url: str) -> BeautifulSoup:
             # Wait up to 10s for new products to appear
             current_product_count = 0
             for _ in range(10):
-                current_products = driver.find_elements(By.CLASS_NAME, "product-card")
+                #current_products = driver.find_elements(By.CLASS_NAME, "product-card")
+                current_products = driver.find_elements(By.CSS_SELECTOR, ".card.glass")
                 current_product_count = len(current_products)
                 if current_product_count > last_product_count:
                     break
@@ -130,7 +122,7 @@ def load_dynamic_page(url: str) -> BeautifulSoup:
             scroll_count += 1
 
         time.sleep(5)  # Final wait
-        final_products = len(driver.find_elements(By.CLASS_NAME, "product-card"))
+        final_products = len(driver.find_elements(By.CSS_SELECTOR, ".card.glass"))
         print(f"Final check: {final_products} sequences loaded")
 
         with open("debug.html", "w", encoding="utf-8") as f:
@@ -150,7 +142,7 @@ def load_dynamic_page(url: str) -> BeautifulSoup:
 
 
 def main() -> None:
-    print(f"Loading {storename} at {time.strftime('%H:%M:%S')}")
+    print(f"Loading {storename}")
     vendor = get_unique_vendor(storename)
 
     for url in vendor.urls:

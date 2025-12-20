@@ -11,7 +11,7 @@ def main() -> None:
     scrapers = sorted(scrapers_path.glob("*.py"))
 
     for scraper in scrapers:
-        if scraper.stem in  ["__init__", "gdOther", "gdNew", "gdChristmas", "uxsg", "mwm"]:
+        if scraper.stem in  ["__init__", "gdOther", "gdNew", "gdChristmas", "mwm"]:
             print("Skipping ", scraper.stem)
             continue
         if os.name == "posix" and scraper.name == "ai.py":
