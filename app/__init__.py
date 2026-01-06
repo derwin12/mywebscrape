@@ -95,6 +95,10 @@ class Sequence(db.Model):  # type: ignore
         return f"<Sequence() {self.name} {self.link}>"
 
 
+@app.route('/ads.txt')
+def ads_txt():
+    return send_from_directory(app.static_folder, 'ads.txt', mimetype='text/plain')
+
 @app.route("/")
 def index():
     app.logger.info("Top 50")
