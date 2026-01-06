@@ -97,7 +97,9 @@ class Sequence(db.Model):  # type: ignore
 
 @app.route('/ads.txt')
 def ads_txt():
-    return send_from_directory(app.static_folder, 'ads.txt', mimetype='text/plain')
+#return send_from_directory(app.static_folder, 'ads.txt', mimetype='text/plain')
+    content = "google.com, pub-6224595170249241, DIRECT, f08c47fec0942fa0\n"
+    return content, 200, {'Content-Type': 'text/plain'}
 
 @app.route("/")
 def index():
