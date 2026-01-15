@@ -10,42 +10,78 @@ storename = "Starry Night Display"
 
 
 def get_products_from_page(
-    soup: BeautifulSoup, url: str, vendor: Vendor
+        soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
-    products = soup.find_all("li", class_="product")
+    # Correct product container selector for this site
+    products = soup.select('li.entry.product.type-product')
+
     sequences = []
     for product in products:
-        sequence_name = product.find("h3").text.strip()
-        if any(x in sequence_name.lower() for x in ["pre-buy", "custom"]):
-            print("Skip", sequence_name)
+        # Title – use the correct WooCommerce class
+        title_tag = product.select_one('h2.woocommerce-loop-product__title')
+        if not title_tag:
             continue
-        product_url = urljoin(url, product.find("a")["href"])
-        if any(x in product_url.lower() for x in ["pre-buy", "custom"]):
+        sequence_name = title_tag.get_text(strip=True)
+
+        if any(x in sequence_name.lower() for x in ["pre-buy", "custom", "coming soon"]):
+            print("Skip:", sequence_name)
             continue
-        price_float = min(
-            float(x.text.strip().replace("$", ""))
-            for x in product.find_all(class_="amount")
-        )
-        price = f"${price_float:.2f}"
-        if price == "$0.00":
-            price = "Free"
+
+        # Product link – take from the main product link
+        link_tag = product.select_one('a.woocommerce-LoopProduct-link')
+        if not link_tag or 'href' not in link_tag.attrs:
+            continue
+        product_url = urljoin(url, link_tag['href'])
+
+        # Price – take the visible price (handles both regular and sale)
+        price_tag = product.select_one('span.woocommerce-Price-amount.amount')
+        if not price_tag:
+            print("No price found for:", sequence_name)
+            continue
+
+        text = price_tag.get_text(strip=True)
+        # Clean: remove currency symbol, "from", commas, etc.
+        cleaned = text.replace('$', '').replace('from', '').replace(',', '').strip()
+        try:
+            price_float = float(cleaned)
+            price_str = f"${price_float:.2f}" if price_float > 0 else "Free"
+        except ValueError:
+            price_str = "Contact store"
+            print(f"Bad price format '{text}' for: {sequence_name}")
 
         sequences.append(
             Sequence(
-                name=sequence_name, vendor_id=vendor.id, link=product_url, price=price
+                name=sequence_name,
+                vendor_id=vendor.id,
+                link=product_url,
+                price=price_str
             )
         )
 
-    if next_tag := soup.find(class_="page-numbers"):
-        if next_page := soup.find(class_="page-numbers").find(
-            class_="next page-numbers"
-        ):
-            next_page_url = urljoin(url, next_page["href"])  # type: ignore
-            response = httpx.get(next_page_url, timeout=30.0, follow_redirects=True)  # type: ignore
+    # Pagination – this part was already mostly correct, but make it safer
+    next_link = soup.select_one('a.next.page-numbers')
+    if next_link and 'href' in next_link.attrs:
+        next_url = urljoin(url, next_link['href'])
+        print(f"→ Next page: {next_url}")
+
+        # Add polite delay + headers (prevents 403 on next pages too)
+        time.sleep(random.uniform(2.0, 4.0))
+        response = httpx.get(
+            next_url,
+            timeout=30.0,
+            follow_redirects=True,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0.0.0",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+            }
+        )
+
+        if response.status_code == 200:
             next_soup = BeautifulSoup(response.text, "html.parser")
-            sequences.extend(
-                get_products_from_page(soup=next_soup, url=url, vendor=vendor)
-            )
+            sequences.extend(get_products_from_page(next_soup, url, vendor))
+        else:
+            print(f"Pagination failed: {response.status_code} on {next_url}")
 
     return sequences
 
@@ -56,7 +92,26 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0, follow_redirects=True)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Cache-Control": "max-age=0",
+        }
+
+        response = httpx.get(
+            url.url,
+            timeout=30.0,
+            follow_redirects=True,
+            headers=headers
+        )
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
