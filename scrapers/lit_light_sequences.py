@@ -20,7 +20,7 @@ def get_minimum_price(price_soup: list[BeautifulSoup]) -> str:
 
 
 def get_products_from_page(
-    soup: BeautifulSoup, url: str, vendor: Vendor
+        soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:
     products = soup.find_all(class_="card-wrapper")
     sequences = []
@@ -47,12 +47,37 @@ def main() -> None:
     vendor = get_unique_vendor(storename)
 
     for url in vendor.urls:
-        print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
-        soup = BeautifulSoup(response.text, "html.parser")
-        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+        page_num = 1
+        while True:
+            # Construct page URL
+            if page_num == 1:
+                page_url = url.url
+            else:
+                page_url = f"{url.url}?page={page_num}"
 
-        create_or_update_sequences(sequences)
+            print(f"Loading {page_url}")
+            response = httpx.get(page_url, timeout=30.0)
+            soup = BeautifulSoup(response.text, "html.parser")
+            sequences = get_products_from_page(soup=soup, url=page_url, vendor=vendor)
+
+            create_or_update_sequences(sequences)
+
+            # Check if there's a next page
+            # Look for pagination links - typically in a nav or pagination element
+            pagination = soup.find_all("a", href=True)
+            next_page_exists = False
+
+            for link in pagination:
+                href = link.get("href", "")
+                if f"page={page_num + 1}" in href:
+                    next_page_exists = True
+                    break
+
+            if next_page_exists:
+                page_num += 1
+            else:
+                print(f"No more pages found after page {page_num}")
+                break
 
 
 if __name__ == "__main__":
