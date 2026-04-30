@@ -34,7 +34,7 @@ def get_products_from_page(
     next_page_anchor = soup.find_all("li", class_="ipsPagination_next")
     if next_page_anchor and not soup.find_all("li", class_="ipsPagination_next ipsPagination_inactive"):
         next_page = soup.find("a", attrs={"rel": "next"})
-        response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+        response = httpx.get(next_page["href"], timeout=30.0, follow_redirects=True)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
@@ -47,7 +47,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = httpx.get(url.url, timeout=30.0, follow_redirects=True)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
