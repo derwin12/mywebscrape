@@ -14,6 +14,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from app import Sequence, Vendor
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
+#testing
+
 if os.name != "posix":
     import selenium.webdriver.chrome.service as Service
     from chromedriver_py import binary_path
