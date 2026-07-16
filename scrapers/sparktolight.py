@@ -5,6 +5,11 @@ from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Spark To Light"
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+}
+
 
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
@@ -25,7 +30,9 @@ def get_products_from_page(
         product_url = product.find('h3', class_='card__heading font-section-collection-productName builder-pointer-events-all-in-color-tweaks-manager').find('a')['href']
         price = "Unknown"
         if product_url:
-            response = httpx.get(product_url, timeout=30.0, follow_redirects=True)
+            response = httpx.get(
+                product_url, timeout=30.0, follow_redirects=True, headers=HEADERS
+            )
             if response.status_code == 200:
                 product_soup = BeautifulSoup(response.text, "html.parser")
                 price_divs = product_soup.find_all('div', class_='product-price')
@@ -47,7 +54,9 @@ def get_products_from_page(
 
     if next_page:
         print(f'Loading {next_page["href"]}')  # type: ignore
-        response = httpx.get(next_page["href"], timeout=30.0, follow_redirects=True)  # type: ignore
+        response = httpx.get(
+            next_page["href"], timeout=30.0, follow_redirects=True, headers=HEADERS  # type: ignore
+        )
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
@@ -60,7 +69,9 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0, follow_redirects=True)
+        response = httpx.get(
+            url.url, timeout=30.0, follow_redirects=True, headers=HEADERS
+        )
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
