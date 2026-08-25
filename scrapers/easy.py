@@ -1,6 +1,6 @@
 from urllib.parse import urljoin
 
-import httpx
+import cfscrape
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
@@ -10,7 +10,7 @@ storename = "Easy xLights Sequences"
 
 
 def get_products_from_page(
-    soup: BeautifulSoup, url: str, vendor: Vendor
+    soup: BeautifulSoup, url: str, vendor: Vendor, scraper
 ) -> list[Sequence]:
     products = soup.find_all('li', class_='ast-grid-common-col')
     sequences = []
@@ -40,13 +40,13 @@ def get_products_from_page(
     if next_page:
         print(f'Loading {urljoin(url, next_page["href"])}')  # type: ignore
         try:
-            response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+            response = scraper.get(next_page["href"], timeout=30.0)  # type: ignore
         except Exception as e:
             print(f"Failed to fetch page: {e}. Skipping to next page.")
             return sequences
 
         next_soup = BeautifulSoup(response.text, "html.parser")
-        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
+        sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor, scraper=scraper))
 
 
     return sequences
@@ -55,12 +55,13 @@ def get_products_from_page(
 def main() -> None:
     print(f"Loading {storename}")
     vendor = get_unique_vendor(storename)
+    scraper = cfscrape.create_scraper()
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = scraper.get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
-        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
+        sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor, scraper=scraper)
 
         create_or_update_sequences(sequences)
 
