@@ -1,9 +1,17 @@
+import sys
 from datetime import datetime
 
 from app import Sequence, Vendor, db
 from rich.console import Console
 from sqlalchemy import and_, func
 from sqlalchemy.exc import NoResultFound
+
+if sys.platform == "win32":
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(errors="replace")
+        except Exception:
+            pass
 
 console = Console()
 

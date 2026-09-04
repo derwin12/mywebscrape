@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import urljoin
 
 import httpx
@@ -7,6 +8,18 @@ from bs4 import BeautifulSoup
 from my_funcs import create_or_update_sequences, get_unique_vendor
 
 storename = "Pixel Pro Displays"
+
+
+def get_with_retries(url: str, *, retries: int = 3, timeout: float = 60.0, **kwargs) -> httpx.Response:
+    for attempt in range(1, retries + 1):
+        try:
+            return httpx.get(url, timeout=timeout, **kwargs)
+        except (httpx.ReadTimeout, httpx.ConnectTimeout, httpx.ConnectError) as exc:
+            if attempt == retries:
+                raise
+            wait = 2 ** attempt
+            print(f"  Request failed ({exc!r}), retrying in {wait}s (attempt {attempt}/{retries})")
+            time.sleep(wait)
 
 
 def get_products_from_page(
@@ -33,7 +46,7 @@ def get_products_from_page(
     next_page = soup.find("link", attrs={"rel": "next"})
     if next_page:
         print(f'Loading {urljoin(url, next_page["href"])}')  # type: ignore
-        response = httpx.get(urljoin(url, next_page["href"]), timeout=30.0)  # type: ignore
+        response = get_with_retries(urljoin(url, next_page["href"]))  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
@@ -46,9 +59,10 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0, follow_redirects=True)
-        print(f"Status code: {response.status_code}")
-        print(response.text[:500])  # Print first 500 characters of the response
+        response = get_with_retries(url.url, follow_redirects=True)
+        if response.status_code != 200:
+            print(f"Status code: {response.status_code}")
+            print(response.text[:500])
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
