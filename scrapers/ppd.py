@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, limit_pagination
 
 storename = "Pixel Pro Displays"
 
@@ -22,6 +22,7 @@ def get_with_retries(url: str, *, retries: int = 3, timeout: float = 60.0, **kwa
             time.sleep(wait)
 
 
+@limit_pagination
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:

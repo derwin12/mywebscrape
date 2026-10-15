@@ -3,13 +3,14 @@ from urllib.parse import urljoin
 
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get, limit_pagination
 
 
 storename = "xTreme Sequences"
 BASEURL = "https://www.xtremesequences.com/index.php?"
 
 
+@limit_pagination
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:

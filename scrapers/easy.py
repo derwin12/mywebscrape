@@ -3,12 +3,13 @@ from urllib.parse import urljoin
 import cfscrape
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, limit_pagination
 import re
 
 storename = "Easy xLights Sequences"
 
 
+@limit_pagination
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor, scraper
 ) -> list[Sequence]:

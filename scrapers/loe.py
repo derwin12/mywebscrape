@@ -3,11 +3,12 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from app import Sequence, Vendor
-from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get, limit_pagination
 
 storename = "LOE Sequences"
 
 
+@limit_pagination
 def get_products_from_page(soup: BeautifulSoup, url: str, vendor: Vendor) -> list[Sequence]:
     # This is the working selector in Jan 2026 on this exact store
     products = soup.select('li.grid__item.grid__item--collection-template')

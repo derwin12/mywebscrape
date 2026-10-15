@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, limit_pagination
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
@@ -23,6 +23,7 @@ storename = "Lilias Store"
 lastval = ""
 pageno=1
 
+@limit_pagination
 def get_products_from_page(
         soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:

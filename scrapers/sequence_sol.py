@@ -4,7 +4,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from app import Sequence, Vendor
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, limit_pagination
 
 storename = "Sequence Solutions"
 
@@ -26,6 +26,7 @@ def get_with_retries(url: str, *, retries: int = 5, **kwargs) -> httpx.Response:
         time.sleep(2 * attempt)
 
 
+@limit_pagination
 def get_products_from_page(
     soup: BeautifulSoup, url: str, vendor: Vendor
 ) -> list[Sequence]:

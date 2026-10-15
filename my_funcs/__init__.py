@@ -1,4 +1,7 @@
+import functools
+import hashlib
 import sys
+import threading
 import time
 from datetime import datetime
 
@@ -51,6 +54,41 @@ def http_get(
         wait = 2 * attempt
         print(f"  {url} failed ({error}), retrying in {wait}s (attempt {attempt}/{retries})")
         time.sleep(wait)
+
+
+MAX_PAGES = 200
+_pagination = threading.local()
+
+
+def limit_pagination(func):
+    """Guard a recursive get_products_from_page against runaway pagination.
+
+    The scrapers follow "next" links by calling themselves. This stops the
+    chain, with a warning, when a page repeats one already seen (a next link
+    that loops back) or when MAX_PAGES pages have been followed.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        soup = args[0] if args else kwargs["soup"]
+        depth = getattr(_pagination, "depth", 0)
+        if depth == 0:
+            _pagination.seen = set()
+        fingerprint = hashlib.md5(str(soup).encode("utf-8", "replace")).hexdigest()
+        if fingerprint in _pagination.seen:
+            print("WARNING: pagination returned a page already seen; stopping")
+            return []
+        if depth >= MAX_PAGES:
+            print(f"WARNING: pagination passed {MAX_PAGES} pages; stopping, items may be missing")
+            return []
+        _pagination.seen.add(fingerprint)
+        _pagination.depth = depth + 1
+        try:
+            return func(*args, **kwargs)
+        finally:
+            _pagination.depth = depth
+
+    return wrapper
 
 
 def delete_sequence(store, name, last_upd):
