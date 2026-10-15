@@ -1,10 +1,9 @@
 from urllib.parse import urljoin
 
-import httpx
 from bs4 import BeautifulSoup
 
 from app import Sequence, Vendor
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Starry Night Display"
 
@@ -66,7 +65,7 @@ def get_products_from_page(
 
         # Add polite delay + headers (prevents 403 on next pages too)
         time.sleep(random.uniform(2.0, 4.0))
-        response = httpx.get(
+        response = http_get(
             next_url,
             timeout=30.0,
             follow_redirects=True,
@@ -106,7 +105,7 @@ def main() -> None:
             "Cache-Control": "max-age=0",
         }
 
-        response = httpx.get(
+        response = http_get(
             url.url,
             timeout=30.0,
             follow_redirects=True,

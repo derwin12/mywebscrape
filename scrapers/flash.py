@@ -1,7 +1,6 @@
-import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Flash The Neighbors"
 
@@ -34,7 +33,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = http_get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, vendor=vendor)
 

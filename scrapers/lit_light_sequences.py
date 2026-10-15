@@ -1,9 +1,8 @@
 from urllib.parse import urljoin
 
-import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Lit Light Sequences"
 
@@ -56,7 +55,7 @@ def main() -> None:
                 page_url = f"{url.url}?page={page_num}"
 
             print(f"Loading {page_url}")
-            response = httpx.get(page_url, timeout=30.0)
+            response = http_get(page_url, timeout=30.0)
             soup = BeautifulSoup(response.text, "html.parser")
             sequences = get_products_from_page(soup=soup, url=page_url, vendor=vendor)
 

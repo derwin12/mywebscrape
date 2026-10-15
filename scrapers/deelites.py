@@ -1,9 +1,8 @@
 from urllib.parse import urljoin
 
-import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "DeeLitesSequences"
 
@@ -34,7 +33,7 @@ def get_products_from_page(
     ]
 
     if next_page_soup:
-        response = httpx.get(next_page_soup[0]["href"], timeout=30.0)  # type: ignore
+        response = http_get(next_page_soup[0]["href"], timeout=30.0)  # type: ignore
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
@@ -47,7 +46,7 @@ def main() -> None:
 
     for url in vendor.urls:
         # Using page saved since I was flagged as robot
-        response = httpx.get(
+        response = http_get(
             url.url, headers={"User-Agent": "Mozilla/6.0"}, timeout=30.0
         )
 

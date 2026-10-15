@@ -1,10 +1,9 @@
 import re
 from urllib.parse import urljoin
 
-import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Majik Show"
 
@@ -38,7 +37,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(
+        response = http_get(
             url.url,
             timeout=60.0,
             follow_redirects=True,

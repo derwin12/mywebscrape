@@ -1,10 +1,9 @@
 from urllib.parse import urljoin
 
-import httpx
 from bs4 import BeautifulSoup
 
 from app import Sequence, Vendor
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "LOE Sequences"
 
@@ -65,7 +64,7 @@ def get_products_from_page(soup: BeautifulSoup, url: str, vendor: Vendor) -> lis
     if next_page and 'href' in next_page.attrs:
         next_url = urljoin(url, next_page['href'])
         time.sleep(2.5)  # polite delay
-        response = httpx.get(next_url, timeout=30.0, follow_redirects=True,
+        response = http_get(next_url, timeout=30.0, follow_redirects=True,
                             headers={"User-Agent": "Mozilla/5.0 SequenceScraper/1.0"})
         if response.status_code == 200:
             next_soup = BeautifulSoup(response.text, "html.parser")
@@ -80,7 +79,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0, follow_redirects=True)
+        response = http_get(url.url, timeout=30.0, follow_redirects=True)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 

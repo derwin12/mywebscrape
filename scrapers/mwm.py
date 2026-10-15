@@ -2,13 +2,12 @@ import re
 from urllib.parse import urljoin
 
 import cfscrape
-import httpx
 
 
 from bs4 import BeautifulSoup
 from app import Sequence, Vendor
 
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Music with Motion"
 BASEURL = 'https://musicwithmotion.com/'
@@ -48,7 +47,7 @@ def get_products_from_page(
             if next_li:
                 next_link = next_li.find('a')
                 print('Processing next page: ' + next_link['href'])
-                response = httpx.get(next_link['href'], timeout=30.0)  # type: ignore
+                response = http_get(next_link['href'], timeout=30.0)  # type: ignore
                 next_soup = BeautifulSoup(response.text, "html.parser")
                 sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 

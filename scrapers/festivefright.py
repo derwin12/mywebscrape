@@ -1,8 +1,7 @@
 from urllib.parse import urljoin
 
-import httpx
 from app import Sequence, Vendor
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Festive Fright Sequences"
 
@@ -11,7 +10,7 @@ def get_products(url: str, vendor: Vendor) -> list[Sequence]:
     sequences = []
     page = 1
     while True:
-        response = httpx.get(
+        response = http_get(
             urljoin(url, "/products.json"),
             params={"limit": 250, "page": page},
             timeout=60.0,

@@ -1,5 +1,8 @@
 import sys
+import time
 from datetime import datetime
+
+import httpx
 
 from app import Sequence, Vendor, db
 from rich.console import Console
@@ -14,6 +17,40 @@ if sys.platform == "win32":
             pass
 
 console = Console()
+
+
+def http_get(
+    url: str,
+    *,
+    retries: int = 3,
+    timeout: float = 30.0,
+    follow_redirects: bool = True,
+    **kwargs,
+) -> httpx.Response:
+    """GET a page, retrying transient failures and raising on a bad final status.
+
+    Scrapers used to parse whatever came back, so an error page looked like a
+    vendor with no products. Server errors (5xx), 429 and network errors are
+    retried; other 4xx responses raise immediately.
+    """
+    for attempt in range(1, retries + 1):
+        try:
+            response = httpx.get(
+                url, timeout=timeout, follow_redirects=follow_redirects, **kwargs
+            )
+            if response.status_code != 429 and response.status_code < 500:
+                response.raise_for_status()
+                return response
+            error = f"HTTP {response.status_code}"
+        except httpx.HTTPStatusError:
+            raise
+        except httpx.TransportError as exc:  # includes timeouts
+            error = repr(exc)
+        if attempt == retries:
+            raise RuntimeError(f"GET {url} failed after {retries} attempts: {error}")
+        wait = 2 * attempt
+        print(f"  {url} failed ({error}), retrying in {wait}s (attempt {attempt}/{retries})")
+        time.sleep(wait)
 
 
 def delete_sequence(store, name, last_upd):

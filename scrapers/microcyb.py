@@ -1,10 +1,9 @@
 import re
 from urllib.parse import urljoin
 
-import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Microcyb"
 
@@ -43,7 +42,7 @@ def main() -> None:
         page = 1
         while page <= total_pages:
             print(f"Loading {page_url} page {page}")
-            response = httpx.get(
+            response = http_get(
                 page_url,
                 params={"page": page} if page > 1 else None,
                 timeout=60.0,

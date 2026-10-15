@@ -1,11 +1,10 @@
 import re
 from urllib.parse import urljoin
 
-import httpx
 from bs4 import BeautifulSoup
 
 from app import Sequence, Vendor
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Livermore Lights"
 
@@ -36,7 +35,7 @@ def get_products_from_page(
     if soup.find("i", class_="NOTUSED"):
         if np := soup.find("ul", class_="page-numbers"):
             if next_page := np.find_all("a")[-1]:
-                response = httpx.get(next_page["href"], timeout=30.0)  # type: ignore
+                response = http_get(next_page["href"], timeout=30.0)  # type: ignore
                 next_soup = BeautifulSoup(response.text, "html.parser")
                 sequences.extend(
                     get_products_from_page(soup=next_soup, url=url, vendor=vendor)
@@ -51,7 +50,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = http_get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 

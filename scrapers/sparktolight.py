@@ -1,7 +1,7 @@
 import httpx, re
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 storename = "Spark To Light"
 
@@ -30,7 +30,7 @@ def get_products_from_page(
         product_url = product.find('h3', class_='card__heading font-section-collection-productName builder-pointer-events-all-in-color-tweaks-manager').find('a')['href']
         price = "Unknown"
         if product_url:
-            response = httpx.get(
+            response = http_get(
                 product_url, timeout=30.0, follow_redirects=True, headers=HEADERS
             )
             if response.status_code == 200:
@@ -54,7 +54,7 @@ def get_products_from_page(
 
     if next_page:
         print(f'Loading {next_page["href"]}')  # type: ignore
-        response = httpx.get(
+        response = http_get(
             next_page["href"], timeout=30.0, follow_redirects=True, headers=HEADERS  # type: ignore
         )
         next_soup = BeautifulSoup(response.text, "html.parser")
@@ -69,7 +69,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(
+        response = http_get(
             url.url, timeout=30.0, follow_redirects=True, headers=HEADERS
         )
         soup = BeautifulSoup(response.text, "html.parser")

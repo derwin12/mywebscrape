@@ -1,10 +1,9 @@
 import re
 from urllib.parse import urljoin
 
-import httpx
 from app import Sequence, Vendor
 from bs4 import BeautifulSoup
-from my_funcs import create_or_update_sequences, get_unique_vendor
+from my_funcs import create_or_update_sequences, get_unique_vendor, http_get
 
 
 storename = "xLightsSequences"
@@ -56,7 +55,7 @@ def get_products_from_page(
     if next_page:
         next_page_url = urljoin(url, soup.find("a", class_="pageNav-jump pageNav-jump--next")["href"])  # type: ignore
         print(f"Loading {next_page_url}")
-        response = httpx.get(next_page_url, timeout=30.0)
+        response = http_get(next_page_url, timeout=30.0)
         next_soup = BeautifulSoup(response.text, "html.parser")
         sequences.extend(get_products_from_page(soup=next_soup, url=url, vendor=vendor))
 
@@ -69,7 +68,7 @@ def main() -> None:
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
-        response = httpx.get(url.url, timeout=30.0)
+        response = http_get(url.url, timeout=30.0)
         soup = BeautifulSoup(response.text, "html.parser")
         sequences = get_products_from_page(soup=soup, url=url.url, vendor=vendor)
 
