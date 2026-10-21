@@ -149,9 +149,23 @@ def insert_sequence(store, url, name, price="-"):
     db.session.commit()
 
 
+def link_variants(link: str) -> list[str]:
+    """The link with and without a leading "www." on the host.
+
+    Vendors serve the same product on both hosts, so a vendor whose listing
+    URLs mix the two would otherwise get every product saved twice.
+    """
+    scheme, sep, rest = link.partition("://")
+    if not sep:
+        return [link]
+    if rest.lower().startswith("www."):
+        return [link, f"{scheme}://{rest[4:]}"]
+    return [link, f"{scheme}://www.{rest}"]
+
+
 def create_or_update_sequences(sequences: list[Sequence]) -> None:
     for sequence in sequences:
-        curr = Sequence.query.filter_by(link=sequence.link).first()
+        curr = Sequence.query.filter(Sequence.link.in_(link_variants(sequence.link))).first()
         if not curr:
             console.print(":new:", f"Adding [b]{sequence.name}[/b] at [b]{sequence.price}[/b] to database.")
             db.session.add(sequence)
