@@ -22,7 +22,7 @@ def get_products_from_page(
     sequences = []
     for product in products:
         sequence_name = product.find("div", class_="name").find("a").text
-        if any(x in sequence_name.lower() for x in ["builder", "custom"]):
+        if any(x in sequence_name.lower() for x in ["builder", "custom", "mega tree"]):
             continue
         # song, artist = sequence_name.split(" - ")
         product_url = urljoin(BASEURL, product.find("a")["href"])
