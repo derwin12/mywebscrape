@@ -1,3 +1,4 @@
+import argparse
 import re
 from urllib.parse import urljoin
 
@@ -11,7 +12,7 @@ storename = "xLightsSequences"
 
 @limit_pagination
 def get_products_from_page(
-    soup: BeautifulSoup, url: str, vendor: Vendor
+    soup: BeautifulSoup, url: str, vendor: Vendor, follow_next: bool = True
 ) -> list[Sequence]:
 
     products = soup.find_all("div", class_="structItem")
@@ -53,7 +54,7 @@ def get_products_from_page(
             )
         )
     next_page = soup.find(class_="pageNav-jump pageNav-jump--next")
-    if next_page:
+    if next_page and follow_next:
         next_page_url = urljoin(url, soup.find("a", class_="pageNav-jump pageNav-jump--next")["href"])  # type: ignore
         print(f"Loading {next_page_url}")
         response = http_get(next_page_url, timeout=30.0)
@@ -63,9 +64,28 @@ def get_products_from_page(
     return sequences
 
 
-def main() -> None:
+def main(file: str | None = None, dry_run: bool = False) -> None:
     print(f"Loading {storename}")
     vendor = get_unique_vendor(storename)
+
+    if file:
+        # The site blocks scrapers with a bot check, so parse a page saved from a browser instead.
+        # Links are resolved against the vendor URL, and next-page links are not followed.
+        print(f"Loading saved page {file}")
+        with open(file, encoding="utf-8") as f:
+            soup = BeautifulSoup(f.read(), "html.parser")
+        sequences = get_products_from_page(
+            soup=soup, url=vendor.urls[0].url, vendor=vendor, follow_next=False
+        )
+        print(f"Found {len(sequences)} sequences in saved page")
+        if not sequences:
+            raise SystemExit("No sequences found; is this a saved xlightsseq.com/sequences/ page?")
+        if dry_run:
+            for seq in sequences:
+                print(f"  {seq.name} | {seq.price} | {seq.link}")
+            return
+        create_or_update_sequences(sequences)
+        return
 
     for url in vendor.urls:
         print(f"Loading {url.url}")
@@ -77,4 +97,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=f"Scrape {storename}")
+    parser.add_argument("--file", help="parse a saved HTML page instead of fetching the site")
+    parser.add_argument("--dry-run", action="store_true", help="with --file, list sequences without saving")
+    args = parser.parse_args()
+    main(file=args.file, dry_run=args.dry_run)
